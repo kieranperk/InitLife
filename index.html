@@ -719,6 +719,8 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
 // 6. Paste your Client ID below
 const GOOGLE_CLIENT_ID = '22715367783-gtp43s4acstbg085c92vd8t5evf3gfdk.apps.googleusercontent.com';
 const GOOGLE_SCOPES = [
+  'openid',
+  'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/calendar.readonly',
   'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/contacts.readonly',
@@ -913,7 +915,6 @@ function startGoogleAuth(){
 }
 
 function handleGoogleCallback(){
-  // OAuth returns token in URL hash after redirect
   const hash = new URLSearchParams(window.location.hash.slice(1));
   const token = hash.get('access_token');
   const expiresIn = hash.get('expires_in');
@@ -922,8 +923,9 @@ function handleGoogleCallback(){
   if(token && state === 'google_auth'){
     googleToken = token;
     const expiry = Date.now() + (parseInt(expiresIn) * 1000);
+
     saveToStorage({ googleToken: token, googleTokenExpiry: expiry });
-    // Clean up URL
+
     window.history.replaceState({}, document.title, window.location.pathname);
     return true;
   }
@@ -1053,6 +1055,19 @@ async function loadAllGoogleData(){
   const now = new Date();
   ts.textContent = `synced ${pad(now.getHours())}:${pad(now.getMinutes())}`;
   if(btn){ btn.classList.remove('spinning'); }
+}
+
+async function fetchGoogleProfileName(token){
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if(!res.ok) throw new Error('failed to fetch user profile');
+
+  const data = await res.json();
+  return data.given_name || data.name || 'user';
 }
 
 function manualSync(){
@@ -1292,11 +1307,25 @@ if(isIOS && isSafari && !isStandalone){
 }
 
 // Handle Google OAuth redirect
-const cameFromGoogle = handleGoogleCallback();
+(async () => {
+  const cameFromGoogle = handleGoogleCallback();
+  loadProfile();
 
-if(loadProfile() || cameFromGoogle){
+  if(cameFromGoogle && googleToken){
+    try{
+      const googleName = await fetchGoogleProfileName(googleToken);
+
+      if(googleName){
+        userName = googleName;
+        saveToStorage({ name: userName });
+      }
+    } catch(e){
+      console.warn('Google profile fetch failed:', e);
+    }
+  }
+
   bootMain();
-}
+})();
 </script>
 </body>
 </html>
