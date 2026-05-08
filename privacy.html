@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>InitLife - Privacy Policy</title>
+
+<!-- Favicon: logo SVG inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a'/%3E%3Cg transform='translate(256,256)' fill='white'%3E%3Cpath fill-rule='evenodd' d='M -154,188 L 154,188 L 188,154 L 188,-154 L 154,-188 L -154,-188 L -188,-154 L -188,154 Z M -118,142 L 118,142 L 142,118 L 142,-118 L 118,-142 L -118,-142 L -142,-118 L -142,118 Z'/%3E%3Crect x='-228' y='-30' width='40' height='60'/%3E%3Crect x='188' y='-30' width='40' height='60'/%3E%3Crect x='-44' y='-96' width='88' height='22'/%3E%3Crect x='-14' y='-74' width='28' height='148'/%3E%3Crect x='-44' y='74' width='88' height='22'/%3E%3C/g%3E%3C/svg%3E">
+
+<style>
+  body{
+    margin:0;
+    padding:40px 20px;
+    background:#0a0a0a;
+    color:#e8e8e8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    line-height:1.6;
+    max-width:800px;
+    margin:auto;
+  }
+  h1,h2{
+    color:#fff;
+    font-family:'Share Tech Mono', monospace;
+  }
+  h1{font-size:24px;margin-bottom:10px;}
+  h2{font-size:16px;margin-top:30px;}
+  a{color:#aaa;}
+  .dim{color:#888;}
+  hr{border:none;border-top:1px solid #222;margin:30px 0;}
+</style>
+</head>
+<body>
+
+<h1>InitLife Privacy Policy</h1>
+<div class="dim">Last updated: May 2026</div>
+
+<hr>
+
+<h2>Overview</h2>
+<p>
+InitLife is designed as a local-first personal interface. The majority of your data stays on your device
+and is stored in your browser’s local storage. We do not operate a backend database and do not collect or
+store personal user data on external servers.
+</p>
+
+<h2>Data Storage</h2>
+<p>
+All user preferences such as your name, settings, and local configuration are stored locally in your browser
+using <code>localStorage</code>. This data never leaves your device unless you explicitly connect third-party services.
+</p>
+
+<h2>Google Account Integration</h2>
+<p>
+If you choose to connect a Google account, InitLife requests limited read-only access to:
+</p>
+<ul>
+  <li>Google Calendar (read-only events)</li>
+  <li>Gmail (read-only unread message count)</li>
+  <li>Google Contacts (read-only birthday data)</li>
+  <li>Basic profile information (first name only)</li>
+</ul>
+
+<p>
+Authentication is handled directly via Google OAuth. Access tokens are stored locally in your browser and are never transmitted to any external server controlled by InitLife.
+</p>
+
+<p>
+You can revoke access at any time via your Google Account security settings.
+</p>
+
+<h2>Location Data</h2>
+<p>
+If you allow location access, your device’s GPS coordinates are used only to display a localised location name.
+Reverse geocoding is performed using OpenStreetMap’s Nominatim service.
+Coordinates are not stored on any server operated by InitLife.
+</p>
+
+<h2>Data Sharing</h2>
+<p>
+We do not sell, share, or transmit your personal data to third parties.
+No analytics platforms, tracking scripts, or advertising networks are used.
+</p>
+
+<h2>Third-Party Services</h2>
+<p>
+InitLife relies on the following external services when enabled by the user:
+</p>
+<ul>
+  <li>Google APIs (Calendar, Gmail, Contacts)</li>
+  <li>Google OAuth authentication</li>
+  <li>OpenStreetMap Nominatim (reverse geocoding)</li>
+</ul>
+
+<p>
+These services are governed by their own privacy policies.
+</p>
+
+<h2>Cookies</h2>
+<p>
+InitLife does not use cookies for tracking. Only browser local storage is used to persist settings.
+</p>
+
+<h2>Data Control</h2>
+<p>
+You can delete all stored data at any time by using the “reset” function inside the application,
+which clears local storage on your device.
+</p>
+
+<h2>Security</h2>
+<p>
+Because all sensitive data remains client-side, security is dependent on your device and browser.
+We recommend using a secure device and keeping your browser up to date.
+</p>
+
+<h2>Contact</h2>
+<p>
+If you have questions about this privacy policy, you can contact the developer via the project repository or website contact method (if available).
+</p>
+
+<hr>
+
+<p class="dim">
+This policy applies only to the InitLife web application and not to any third-party services it may interact with.
+</p>
+
+</body>
+</html>
