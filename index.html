@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>InitLife</title>
+
+<!-- PWA -->
+<meta name="application-name" content="InitLife">
+<meta name="description" content="Your life. One terminal.">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="InitLife">
+
+<!-- Favicon: logo SVG inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a'/%3E%3Cg transform='translate(256,256)' fill='white'%3E%3Cpath fill-rule='evenodd' d='M -154,188 L 154,188 L 188,154 L 188,-154 L 154,-188 L -154,-188 L -188,-154 L -188,154 Z M -118,142 L 118,142 L 142,118 L 142,-118 L 118,-142 L -118,-142 L -142,-118 L -142,118 Z'/%3E%3Crect x='-228' y='-30' width='40' height='60'/%3E%3Crect x='188' y='-30' width='40' height='60'/%3E%3Crect x='-44' y='-96' width='88' height='22'/%3E%3Crect x='-14' y='-74' width='28' height='148'/%3E%3Crect x='-44' y='74' width='88' height='22'/%3E%3C/g%3E%3C/svg%3E">
+
+<!-- Apple touch icon: populated by JS canvas below -->
+<link rel="apple-touch-icon" id="apple-touch-icon-link" href="">
+
+<!-- PWA Manifest: references sw.js which must be in same directory as index.html -->
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22InitLife%22%2C%22short_name%22%3A%22InitLife%22%2C%22description%22%3A%22Your%20life.%20One%20terminal.%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a0a%22%2C%22theme_color%22%3A%22%230a0a0a%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon-192.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22icon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;max-width:100%}
+
+:root{
+  --fg:#e8e8e8;
+  --fg2:#a0a0a0;
+  --fg3:#505050;
+  --bg:#0a0a0a;
+  --bg2:#111111;
+  --bg3:#161616;
+  --border:#1e1e1e;
+  --accent:#ffffff;
+  --dim:#2a2a2a;
+  --mono:'JetBrains Mono',monospace;
+}
+
+html,body{
+  background:var(--bg);
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+#hub{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--mono);
+  min-height:100vh;
+  min-height:100dvh;
+  width:100%;
+  position:relative;
+  overflow-x:hidden;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.scanlines{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+  pointer-events:none;
+  z-index:50;
+}
+
+/* ── ONBOARDING ─────────────────────────────── */
+
+#onboard{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:var(--bg);
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:40px 28px;
+  overflow-y:auto;
+}
+
+#onboard.hidden{display:none}
+
+.ob-label{
+  font-size:9px;color:var(--fg3);
+  letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.ob-title{
+  font-size:26px;font-weight:700;
+  color:var(--accent);
+  font-family:'Share Tech Mono',monospace;
+  margin-bottom:4px;
+}
+
+.ob-domain{
+  font-size:10px;color:var(--fg3);
+  margin-bottom:28px;letter-spacing:0.05em;
+}
+
+.ob-field{margin-bottom:20px}
+
+.ob-input{
+  width:100%;background:transparent;
+  border:none;border-bottom:1px solid var(--dim);
+  color:var(--accent);font-family:var(--mono);
+  font-size:16px;padding:8px 0;
+  outline:none;caret-color:var(--accent);
+  border-radius:0;
+  -webkit-appearance:none;
+}
+
+.ob-input:focus{border-bottom-color:var(--fg2)}
+.ob-input::placeholder{color:var(--fg3)}
+
+.ob-divider{
+  border:none;border-top:1px solid var(--border);
+  margin:24px 0;
+}
+
+.ob-google{
+  width:100%;background:transparent;
+  border:1px solid var(--dim);
+  color:var(--fg2);font-family:var(--mono);
+  font-size:11px;padding:12px;
+  cursor:pointer;letter-spacing:0.08em;
+  text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:10px;
+  transition:border-color 0.2s,color 0.2s;
+}
+
+.ob-google:hover{border-color:var(--fg3);color:var(--fg)}
+
+.ob-google-note{
+  font-size:9px;color:var(--fg3);text-align:center;
+  margin-bottom:16px;line-height:1.5;
+}
+
+.ob-btn{
+  width:100%;background:var(--accent);
+  color:#000;border:none;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  padding:13px;cursor:pointer;
+  letter-spacing:0.1em;text-transform:uppercase;
+  -webkit-appearance:none;border-radius:0;
+}
+
+.ob-btn:active{background:var(--fg2)}
+
+.ob-skip{
+  font-size:10px;color:var(--fg3);
+  text-align:center;margin-top:14px;
+  cursor:pointer;padding:8px;
+}
+
+/* ── MAIN ────────────────────────────────────── */
+
+.header{
+  padding:14px 20px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;
+  background:var(--bg);
+  z-index:40;
+}
+
+.header-left{display:flex;align-items:center;gap:8px}
+
+.status-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--fg3);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.app-name{font-size:12px;font-weight:700;color:var(--fg2);letter-spacing:0.08em}
+.app-ver{font-size:9px;color:var(--fg3)}
+.session{font-size:10px;color:var(--fg3)}
+
+/* ── CLOCK ───────────────────────────────────── */
+
+.clock-block{
+  padding:24px 20px 18px;
+  border-bottom:1px solid var(--border);
+}
+
+.clock-row{display:flex;align-items:baseline;gap:4px}
+
+.clock-hm{
+  font-size:54px;font-weight:700;letter-spacing:-3px;
+  color:var(--accent);line-height:1;
+  font-family:'Share Tech Mono',monospace;
+}
+
+.clock-s{font-size:22px;color:var(--fg3);font-weight:300}
+
+.clock-date{
+  font-size:11px;color:var(--fg2);
+  margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;
+}
+
+.clock-date span{color:var(--fg3)}
+
+/* ── GREETING ────────────────────────────────── */
+
+.greeting-block{
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.block-label{
+  font-size:9px;color:var(--fg3);
+  letter-spacing:0.12em;text-transform:uppercase;
+  margin-bottom:5px;
+}
+
+.greeting-text{
+  font-size:14px;color:var(--fg);
+  display:flex;align-items:center;gap:5px;line-height:1.5;
+}
+
+.cursor{
+  display:inline-block;width:2px;height:14px;
+  background:var(--accent);
+  animation:blink 1s step-end infinite;
+  vertical-align:middle;flex-shrink:0;
+}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── PROGRESS ────────────────────────────────── */
+
+.progress-block{
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.prog-row{margin-bottom:10px}
+.prog-row:last-child{margin-bottom:0}
+
+.prog-label{
+  display:flex;justify-content:space-between;
+  font-size:9px;color:var(--fg3);
+  margin-bottom:5px;letter-spacing:0.05em;
+}
+
+.prog-track{height:2px;background:var(--bg3);overflow:hidden}
+
+.prog-fill{
+  height:100%;background:var(--fg3);
+  transition:width 1.2s ease;
+}
+
+.prog-fill.bright{background:var(--fg2)}
+
+/* ── SECTION ─────────────────────────────────── */
+
+.section{border-bottom:1px solid var(--border)}
+
+.section-header{
+  padding:9px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg2);
+}
+
+.section-title{
+  font-size:9px;color:var(--fg3);
+  letter-spacing:0.15em;text-transform:uppercase;
+}
+
+.section-meta{font-size:9px;color:var(--fg3)}
+
+.section-body{padding:2px 0}
+
+/* ── FEED ITEMS ──────────────────────────────── */
+
+.feed-item{
+  padding:10px 20px;
+  display:flex;align-items:flex-start;gap:10px;
+  border-bottom:1px solid #0f0f0f;
+}
+
+.feed-item:last-child{border-bottom:none}
+
+.feed-tag{
+  font-size:8px;letter-spacing:0.1em;text-transform:uppercase;
+  padding:2px 5px;border:1px solid var(--dim);
+  color:var(--fg3);white-space:nowrap;flex-shrink:0;margin-top:2px;
+}
+
+.feed-tag.google{border-color:#333;color:#888}
+
+.feed-content{flex:1;min-width:0}
+
+.feed-title{font-size:12px;color:var(--fg);line-height:1.4}
+.feed-title.dim{color:var(--fg3)}
+
+.feed-meta{font-size:9px;color:var(--fg3);margin-top:2px}
+
+/* ── GOOGLE CONNECTED BANNER ─────────────────── */
+
+#google-banner{
+  padding:10px 20px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:none;
+  align-items:center;justify-content:space-between;
+}
+
+#google-banner.visible{display:flex}
+
+.g-badge{
+  font-size:9px;color:var(--fg3);letter-spacing:0.1em;
+  display:flex;align-items:center;gap:6px;
+}
+
+.g-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:#4ade80;opacity:0.7;
+}
+
+.g-disconnect{
+  font-size:9px;color:var(--fg3);cursor:pointer;
+  padding:2px 0;
+}
+
+.g-disconnect:hover{color:var(--fg2)}
+
+/* ── GOOGLE DATA SECTION ─────────────────────── */
+
+#google-section{display:none}
+#google-section.visible{display:block}
+
+/* ── QUOTE ───────────────────────────────────── */
+
+.quote-block{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.quote-text{
+  font-size:11px;color:var(--fg3);
+  line-height:1.8;
+  border-left:1px solid var(--dim);
+  padding-left:12px;
+}
+
+.quote-author{
+  font-size:9px;color:var(--fg3);
+  margin-top:6px;letter-spacing:0.05em;
+}
+
+/* ── CONNECT PROMPT ──────────────────────────── */
+
+#connect-prompt{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.connect-text{
+  font-size:11px;color:var(--fg3);line-height:1.7;
+  margin-bottom:10px;
+}
+
+.connect-btn{
+  background:transparent;
+  border:1px solid var(--dim);
+  color:var(--fg2);font-family:var(--mono);
+  font-size:10px;padding:8px 14px;
+  cursor:pointer;letter-spacing:0.08em;
+  text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;
+}
+
+.connect-btn:hover{border-color:var(--fg3);color:var(--fg)}
+
+/* ── FOOTER ──────────────────────────────────── */
+
+.footer{
+  padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:6px;
+}
+
+.footer-l,.footer-r{font-size:9px;color:var(--fg3)}
+
+.footer-r{
+  display:flex;align-items:center;gap:12px;
+}
+
+.footer-btn{cursor:pointer;padding:2px 0}
+.footer-btn:hover{color:var(--fg2)}
+
+/* ── INSTALL BANNER ──────────────────────────────── */
+
+#install-banner{
+  display:none;
+  padding:12px 20px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  gap:10px;
+  align-items:flex-start;
+}
+#install-banner.visible{ display:flex; }
+.install-icon{ font-size:16px;flex-shrink:0;margin-top:1px; }
+.install-body{ flex:1;min-width:0; }
+.install-title{ font-size:11px;color:var(--fg);margin-bottom:3px;font-weight:500; }
+.install-sub{ font-size:10px;color:var(--fg3);line-height:1.6; }
+.install-actions{ display:flex;gap:8px;margin-top:10px;flex-wrap:wrap; }
+.install-btn{
+  background:var(--accent);color:#000;border:none;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:6px 12px;cursor:pointer;letter-spacing:0.08em;
+  text-transform:uppercase;-webkit-appearance:none;border-radius:0;
+  touch-action:manipulation;
+}
+.install-dismiss{
+  font-size:10px;color:var(--fg3);cursor:pointer;
+  padding:6px 0;touch-action:manipulation;
+}
+.install-dismiss:hover{ color:var(--fg2); }
+
+/* ── SYNC REFRESH ────────────────────────────────── */
+
+.sync-meta{ display:flex;align-items:center;gap:8px; }
+.sync-refresh{
+  font-size:12px;color:var(--fg3);cursor:pointer;
+  padding:0 2px;touch-action:manipulation;
+  display:inline-block;line-height:1;
+}
+.sync-refresh:hover{ color:var(--fg2); }
+.sync-refresh.spinning{ animation:spin 0.5s linear; }
+@keyframes spin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ── TOUCH / MOBILE ──────────────────────────── */
+
+button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
+  touch-action:manipulation;
+}
+
+@media(max-width:480px){
+  .clock-hm{font-size:44px;letter-spacing:-2px}
+  .clock-s{font-size:18px}
+  .clock-date{font-size:10px;gap:6px}
+
+  .header,.greeting-block,.progress-block,
+  .feed-item,.quote-block,.footer,#connect-prompt,
+  #google-banner,.clock-block{
+    padding-left:16px;padding-right:16px;
+  }
+
+  .section-header{padding-left:16px;padding-right:16px}
+
+  .feed-title{font-size:11px}
+  .feed-meta{font-size:8px}
+  .quote-text{font-size:10px;line-height:1.7}
+  .footer{gap:8px}
+  .footer-l,.footer-r,.footer-btn{font-size:8px}
+  .ob-title{font-size:22px}
+  .ob-domain{font-size:9px}
+  .ob-input{font-size:16px}
+  #onboard{padding:32px 20px}
+}
+</style>
+</head>
+<body>
+<div id="hub">
+<div class="scanlines"></div>
+
+<!-- ── ONBOARDING ─────────────────────────────── -->
+<div id="onboard">
+  <div class="ob-label">// first boot</div>
+  <div class="ob-title">initlife.app</div>
+  <div class="ob-domain">your life. one terminal.</div>
+
+  <div class="ob-field">
+    <div class="ob-label">your name</div>
+    <input class="ob-input" id="ob-name" type="text"
+      placeholder="e.g. alex" autocomplete="off" spellcheck="false"/>
+  </div>
+
+  <button class="ob-btn" onclick="saveProfile()">initialise →</button>
+
+  <hr class="ob-divider">
+
+  <!-- Google OAuth – optional at setup -->
+  <button class="ob-google" onclick="startGoogleAuth()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+    connect google account
+  </button>
+  <div class="ob-google-note">
+    optional — unlocks calendar, gmail &amp; birthday sync.<br>
+    no backend. all tokens stay on your device.
+  </div>
+
+  <div class="ob-skip" onclick="skipSetup()">skip for now</div>
+</div>
+
+<!-- ── MAIN ──────────────────────────────────── -->
+<div id="main-view" style="display:none">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="status-dot"></div>
+      <span class="app-name">initlife.app</span>
+      <span class="app-ver">v2.1</span>
+    </div>
+    <div class="session" id="session-up">00:00:00</div>
+  </div>
+
+  <!-- Install banner (shown when applicable) -->
+  <div id="install-banner">
+    <div class="install-icon">⬇</div>
+    <div class="install-body">
+      <div class="install-title">add initlife to your home screen</div>
+      <div class="install-sub" id="install-sub">install as a webapp for instant access</div>
+      <div class="install-actions">
+        <button class="install-btn" id="install-btn" onclick="triggerInstall()">install app</button>
+        <span class="install-dismiss" onclick="dismissInstall()">not now</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google connected banner -->
+  <div id="google-banner">
+    <div class="g-badge">
+      <div class="g-dot"></div>
+      <span>google connected</span>
+    </div>
+    <div class="g-disconnect" onclick="disconnectGoogle()">disconnect</div>
+  </div>
+
+  <!-- Clock -->
+  <div class="clock-block">
+    <div class="clock-row">
+      <div class="clock-hm" id="c-hm">00:00</div>
+      <div class="clock-s" id="c-s">:00</div>
+    </div>
+    <div class="clock-date">
+      <span id="c-date">loading</span>
+      <span>·</span>
+      <span id="c-doy">day 000</span>
+      <span>·</span>
+      <span id="c-wk">wk 00</span>
+    </div>
+  </div>
+
+  <!-- Greeting -->
+  <div class="greeting-block">
+    <div class="block-label">// greeting</div>
+    <div class="greeting-text" id="greeting"></div>
+  </div>
+
+  <!-- Progress bars -->
+  <div class="progress-block">
+    <div class="prog-row">
+      <div class="prog-label">
+        <span>day</span>
+        <span id="prog-day-info">0% · 24h left</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill bright" id="pf-day" style="width:0%"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label">
+        <span>week</span>
+        <span id="prog-week-info">0% · 7d left</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="pf-week" style="width:0%"></div></div>
+    </div>
+    <div class="prog-row">
+      <div class="prog-label">
+        <span>year</span>
+        <span id="prog-year-info">0% · 365d left</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="pf-year" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Google data section (visible when connected) -->
+  <div id="google-section" class="section">
+    <div class="section-header">
+      <span class="section-title">// google sync</span>
+      <div class="sync-meta">
+        <span class="section-meta" id="google-ts">syncing...</span>
+        <span class="sync-refresh" id="sync-refresh-btn" onclick="manualSync()" title="refresh">↻</span>
+      </div>
+    </div>
+    <div class="section-body" id="google-feed">
+      <div class="feed-item">
+        <div class="feed-tag google">cal</div>
+        <div class="feed-content">
+          <div class="feed-title dim" id="g-cal">loading calendar...</div>
+          <div class="feed-meta" id="g-cal-meta">upcoming events</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-tag google">mail</div>
+        <div class="feed-content">
+          <div class="feed-title dim" id="g-mail">loading inbox...</div>
+          <div class="feed-meta" id="g-mail-meta">gmail unread</div>
+        </div>
+      </div>
+      <div class="feed-item" id="bday-item" style="display:none">
+        <div class="feed-tag google">bday</div>
+        <div class="feed-content">
+          <div class="feed-title dim" id="g-bday">checking contacts...</div>
+          <div class="feed-meta" id="g-bday-meta">upcoming birthdays</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intel feed -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">// intel</span>
+      <span class="section-meta" id="intel-ts">live</span>
+    </div>
+    <div class="section-body">
+      <div class="feed-item">
+        <div class="feed-tag">time</div>
+        <div class="feed-content">
+          <div class="feed-title" id="f-period">calculating...</div>
+          <div class="feed-meta" id="f-period-meta">time of day analysis</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-tag">focus</div>
+        <div class="feed-content">
+          <div class="feed-title" id="f-focus">loading...</div>
+          <div class="feed-meta" id="f-focus-meta">cognitive window</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-tag">loc</div>
+        <div class="feed-content">
+          <div class="feed-title" id="f-loc">locating...</div>
+          <div class="feed-meta" id="f-loc-meta">geolocation</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-tag">sys</div>
+        <div class="feed-content">
+          <div class="feed-title" id="f-sys">all systems nominal</div>
+          <div class="feed-meta" id="f-sys-meta">local diagnostics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google connect prompt (visible when NOT connected) -->
+  <div id="connect-prompt" class="section">
+    <div class="section-header">
+      <span class="section-title">// google sync</span>
+      <span class="section-meta">not connected</span>
+    </div>
+    <div style="padding:14px 20px;">
+      <div class="connect-text">
+        // connect your google account to unlock<br>
+        calendar events · gmail unread count · birthday reminders<br>
+        <br>
+        tokens never leave your device. no server involved.
+      </div>
+      <button class="connect-btn" onclick="startGoogleAuth()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#666"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#666"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#666"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#666"/>
+        </svg>
+        connect google
+      </button>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-block">
+    <div class="section-header" style="padding:9px 0;background:transparent;margin-bottom:10px">
+      <span class="section-title">// quote.log</span>
+      <span class="section-meta" id="quote-num">—</span>
+    </div>
+    <div class="quote-text" id="q-text">loading...</div>
+    <div class="quote-author" id="q-author">— ...</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-l" id="f-left">initlife.app · locating...</div>
+    <div class="footer-r">
+      <span class="footer-btn" onclick="cycleQuote()">↻ quote</span>
+      <span class="footer-btn" onclick="resetProfile()">⟳ reset</span>
+    </div>
+  </div>
+
+</div><!-- /main-view -->
+</div><!-- /hub -->
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+// To enable Google sync:
+// 1. Create a project at console.cloud.google.com
+// 2. Enable Calendar API, Gmail API, People API
+// 3. Create an OAuth 2.0 Client ID (Web Application)
+// 4. Add https://initlife.app as an authorised JavaScript origin
+// 5. Add https://initlife.app as an authorised redirect URI
+// 6. Paste your Client ID below
+const GOOGLE_CLIENT_ID = '22715367783-gtp43s4acstbg085c92vd8t5evf3gfdk.apps.googleusercontent.com';
+const GOOGLE_SCOPES = [
+  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'https://www.googleapis.com/auth/contacts.readonly',
+].join(' ');
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const QUOTES=[
+  {t:"Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",a:"Martin Fowler"},
+  {t:"First, solve the problem. Then, write the code.",a:"John Johnson"},
+  {t:"The best code is no code at all.",a:"Jeff Atwood"},
+  {t:"Talk is cheap. Show me the code.",a:"Linus Torvalds"},
+  {t:"Programs must be written for people to read, and only incidentally for machines to execute.",a:"Harold Abelson"},
+  {t:"Make it work, make it right, make it fast.",a:"Kent Beck"},
+  {t:"Simplicity is the soul of efficiency.",a:"Austin Freeman"},
+  {t:"The most dangerous phrase in language is 'we've always done it this way'.",a:"Grace Hopper"},
+  {t:"It's not a bug — it's an undocumented feature.",a:"Unknown"},
+  {t:"Code is like humor. When you have to explain it, it's bad.",a:"Cory House"},
+  {t:"Weeks of coding can save you hours of planning.",a:"Unknown"},
+  {t:"The computer was born to solve problems that did not exist before.",a:"Bill Gates"},
+  {t:"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.",a:"Antoine de Saint-Exupéry"},
+  {t:"A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable.",a:"Leslie Lamport"},
+  {t:"Inside every large program is a small program struggling to get out.",a:"Tony Hoare"},
+];
+
+const GREETINGS={
+  earlyMorning:["system boot, {name}","process started, {name}","initialising day — good morning, {name}","early riser detected: {name}","rise and compile, {name}"],
+  morning:["good morning, {name}","morning, {name} — coffee.init()","another build day, {name}","{name} — let's ship something","morning checkpoint: {name}"],
+  afternoon:["afternoon, {name}","midday sync complete, {name}","good afternoon, {name}","post-lunch mode, {name}","afternoon — stay in flow, {name}"],
+  evening:["good evening, {name}","winding down, {name}?","evening session active, {name}","{name} — save your work","almost EOD, {name}"],
+  night:["late night grind, {name}","night mode: {name}","still here, {name}?","burning the midnight oil, {name}","01:xx — respect, {name}"],
+};
+
+const FOCUS={
+  earlyMorning:["prime deep work window","peak solo focus: pre-world","0 interruptions expected","flow state: primed"],
+  morning:["deep work block available","cognitive load: low","optimal for complex tasks","focus window: open"],
+  afternoon:["energy dip zone","schedule meetings here","lighter tasks recommended","post-lunch dip: expected"],
+  evening:["creative spike window","second wind incoming","good for review & planning","context switch cost: low"],
+  night:["hyperfocus mode available","world is quiet — use it","night owl advantage: active","async communication optimal"],
+};
+
+const PERIOD_INFO={
+  earlyMorning:["pre-dawn hours (00:00–06:00)","before the world boots up"],
+  morning:["morning hours (06:00–12:00)","peak cognitive window"],
+  afternoon:["afternoon hours (12:00–17:00)","energy management zone"],
+  evening:["evening hours (17:00–21:00)","wind-down or ramp-up"],
+  night:["night hours (21:00–24:00)","deep work or deep rest"],
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let sessionStart = Date.now();
+let userName = 'user';
+let userLocation = 'locating...';
+let googleToken = null;
+let quoteIndex = 0;
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+const pad = n => String(n).padStart(2,'0');
+const getDOY = d => Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000);
+const getWk  = d => Math.ceil(((d - new Date(d.getFullYear(),0,1)) / 86400000 + new Date(d.getFullYear(),0,1).getDay() + 1) / 7);
+const getDIY = y => (y%4===0 && (y%100!==0 || y%400===0)) ? 366 : 365;
+const pick   = arr => arr[Math.floor(Math.random() * arr.length)];
+const fmt    = (s, name) => s.replace('{name}', name || 'user');
+
+function getPeriod(h){
+  if(h < 6)  return 'earlyMorning';
+  if(h < 12) return 'morning';
+  if(h < 17) return 'afternoon';
+  if(h < 21) return 'evening';
+  return 'night';
+}
+
+// ─── PROFILE ───────────────────────────────────────────────────────────────
+function loadProfile(){
+  try{
+    const raw = localStorage.getItem('initlife_profile');
+    if(raw){
+      const p = JSON.parse(raw);
+      userName = p.name || 'user';
+      if(p.location) userLocation = p.location;
+      if(p.googleToken) {
+        googleToken = p.googleToken;
+        // Check if token is expired
+        if(p.googleTokenExpiry && Date.now() > p.googleTokenExpiry){
+          googleToken = null;
+        }
+      }
+      return true;
+    }
+  } catch(e){}
+  return false;
+}
+
+function saveToStorage(extra={}){
+  try{
+    const current = JSON.parse(localStorage.getItem('initlife_profile') || '{}');
+    localStorage.setItem('initlife_profile', JSON.stringify({
+      ...current,
+      name: userName,
+      location: userLocation,
+      ...extra,
+    }));
+  } catch(e){}
+}
+
+function saveProfile(){
+  const n = document.getElementById('ob-name').value.trim().toLowerCase() || 'user';
+  userName = n;
+  saveToStorage();
+  bootMain();
+}
+
+function skipSetup(){
+  userName = 'user';
+  bootMain();
+}
+
+function resetProfile(){
+  try{ localStorage.removeItem('initlife_profile'); } catch(e){}
+  googleToken = null;
+  document.getElementById('onboard').classList.remove('hidden');
+  document.getElementById('main-view').style.display = 'none';
+  document.getElementById('ob-name').value = '';
+}
+
+// ─── LOCATION ──────────────────────────────────────────────────────────────
+function updateFooter(){
+  document.getElementById('f-left').textContent = `initlife.app · ${userLocation}`;
+}
+
+function setLocationFallback(reason='unavailable'){
+  userLocation = `location ${reason}`;
+  document.getElementById('f-loc').textContent = reason === 'denied' ? 'location access denied' : 'location unavailable';
+  document.getElementById('f-loc-meta').textContent = reason === 'denied' ? 'enable in browser settings' : 'geolocation error';
+  updateFooter();
+}
+
+async function detectLocation(){
+  if(!navigator.geolocation){ setLocationFallback(); return; }
+
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      const { latitude: lat, longitude: lon } = pos.coords;
+      document.getElementById('f-loc').textContent = `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+      document.getElementById('f-loc-meta').textContent = 'resolving address...';
+
+      try{
+        // Nominatim requires a descriptive User-Agent via email param for policy compliance
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=user@initlife.app`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('nominatim error');
+        const data = await res.json();
+
+        const city = data.address.city
+          || data.address.town
+          || data.address.village
+          || data.address.county
+          || 'unknown';
+        const country = (data.address.country_code || 'xx').toLowerCase();
+
+        userLocation = `${city.toLowerCase()}, ${country}`;
+        document.getElementById('f-loc').textContent = userLocation;
+        document.getElementById('f-loc-meta').textContent = `${lat.toFixed(4)}° ${lon.toFixed(4)}°`;
+        updateFooter();
+        saveToStorage();
+      } catch(e){
+        // Fallback: show coords even if reverse geocode fails
+        userLocation = `${lat.toFixed(3)}°, ${lon.toFixed(3)}°`;
+        document.getElementById('f-loc').textContent = userLocation;
+        document.getElementById('f-loc-meta').textContent = 'reverse geocode failed';
+        updateFooter();
+      }
+    },
+    err => {
+      setLocationFallback(err.code === 1 ? 'denied' : 'unavailable');
+    },
+    { timeout: 8000, maximumAge: 300000 } // cache position for 5 min
+  );
+}
+
+// ─── GOOGLE AUTH (OAuth 2.0 implicit/token flow) ───────────────────────────
+function startGoogleAuth(){
+  const params = new URLSearchParams({
+    client_id:     GOOGLE_CLIENT_ID,
+    redirect_uri:  window.location.origin + window.location.pathname,
+    response_type: 'token',
+    scope:         GOOGLE_SCOPES,
+    include_granted_scopes: 'true',
+    state:         'google_auth',
+  });
+
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+}
+
+function handleGoogleCallback(){
+  // OAuth returns token in URL hash after redirect
+  const hash = new URLSearchParams(window.location.hash.slice(1));
+  const token = hash.get('access_token');
+  const expiresIn = hash.get('expires_in');
+  const state = hash.get('state');
+
+  if(token && state === 'google_auth'){
+    googleToken = token;
+    const expiry = Date.now() + (parseInt(expiresIn) * 1000);
+    saveToStorage({ googleToken: token, googleTokenExpiry: expiry });
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+function disconnectGoogle(){
+  googleToken = null;
+  saveToStorage({ googleToken: null, googleTokenExpiry: null });
+  document.getElementById('google-banner').classList.remove('visible');
+  document.getElementById('google-section').classList.remove('visible');
+  document.getElementById('connect-prompt').style.display = 'block';
+}
+
+// ─── GOOGLE API CALLS ──────────────────────────────────────────────────────
+async function googleFetch(url){
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${googleToken}` }
+  });
+  if(res.status === 401){ disconnectGoogle(); throw new Error('token expired'); }
+  return res.json();
+}
+
+async function loadGoogleCalendar(){
+  const el = document.getElementById('g-cal');
+  const meta = document.getElementById('g-cal-meta');
+  try{
+    const now = new Date().toISOString();
+    const end = new Date(Date.now() + 7 * 86400000).toISOString();
+    const data = await googleFetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&timeMax=${end}&maxResults=3&orderBy=startTime&singleEvents=true`
+    );
+    const events = data.items || [];
+    if(events.length === 0){
+      el.textContent = 'no upcoming events';
+      meta.textContent = 'next 7 days clear';
+    } else {
+      const next = events[0];
+      const start = next.start.dateTime
+        ? new Date(next.start.dateTime).toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})
+        : new Date(next.start.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+      el.textContent = next.summary || 'untitled event';
+      el.classList.remove('dim');
+      meta.textContent = `${start} · ${events.length} event${events.length>1?'s':''} this week`;
+    }
+  } catch(e){
+    el.textContent = 'calendar unavailable';
+    meta.textContent = e.message;
+  }
+}
+
+async function loadGmailUnread(){
+  const el = document.getElementById('g-mail');
+  const meta = document.getElementById('g-mail-meta');
+  try{
+    const data = await googleFetch(
+      'https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX,UNREAD&maxResults=1'
+    );
+    const count = data.resultSizeEstimate || 0;
+    el.textContent = count === 0
+      ? 'inbox zero — nice'
+      : `${count} unread message${count !== 1 ? 's' : ''}`;
+    el.classList.remove('dim');
+    meta.textContent = 'gmail · primary inbox';
+  } catch(e){
+    el.textContent = 'gmail unavailable';
+    meta.textContent = e.message;
+  }
+}
+
+async function loadBirthdays(){
+  const el   = document.getElementById('g-bday');
+  const meta = document.getElementById('g-bday-meta');
+  const item = document.getElementById('bday-item');
+  try{
+    const data = await googleFetch(
+      'https://people.googleapis.com/v1/people/me/connections?personFields=names,birthdays&pageSize=100'
+    );
+    const contacts = data.connections || [];
+    const today = new Date();
+    const upcoming = [];
+
+    contacts.forEach(c => {
+      if(!c.birthdays) return;
+      c.birthdays.forEach(b => {
+        if(!b.date) return;
+        const { month, day } = b.date;
+        const bday = new Date(today.getFullYear(), month - 1, day);
+        if(bday < today) bday.setFullYear(today.getFullYear() + 1);
+        const diff = Math.round((bday - today) / 86400000);
+        if(diff <= 14){
+          const name = c.names?.[0]?.displayName || 'someone';
+          upcoming.push({ name, diff });
+        }
+      });
+    });
+
+    upcoming.sort((a,b) => a.diff - b.diff);
+
+    if(upcoming.length === 0){
+      // Hide the row entirely — nothing relevant in next 14 days
+      item.style.display = 'none';
+    } else {
+      item.style.display = 'flex';
+      const next = upcoming[0];
+      el.textContent = next.diff === 0
+        ? `🎂 today: ${next.name}'s birthday`
+        : next.diff === 1
+        ? `${next.name}'s birthday is tomorrow`
+        : `${next.name} — birthday in ${next.diff} days`;
+      el.classList.remove('dim');
+      meta.textContent = upcoming.length > 1
+        ? `+${upcoming.length - 1} more in the next 14 days`
+        : 'google contacts · birthdays';
+    }
+  } catch(e){
+    item.style.display = 'none'; // hide on error too — don't clutter UI
+  }
+}
+
+async function loadAllGoogleData(){
+  const ts  = document.getElementById('google-ts');
+  const btn = document.getElementById('sync-refresh-btn');
+  ts.textContent = 'syncing...';
+  if(btn){ btn.classList.add('spinning'); }
+  await Promise.all([loadGoogleCalendar(), loadGmailUnread(), loadBirthdays()]);
+  const now = new Date();
+  ts.textContent = `synced ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  if(btn){ btn.classList.remove('spinning'); }
+}
+
+function manualSync(){
+  if(!googleToken) return;
+  loadAllGoogleData();
+}
+
+// ─── QUOTES ────────────────────────────────────────────────────────────────
+function showQuote(idx){
+  const q = QUOTES[idx % QUOTES.length];
+  document.getElementById('q-text').textContent = q.t;
+  document.getElementById('q-author').textContent = '— ' + q.a;
+  document.getElementById('quote-num').textContent = `${(idx % QUOTES.length) + 1}/${QUOTES.length}`;
+}
+
+function cycleQuote(){
+  quoteIndex = (quoteIndex + 1) % QUOTES.length;
+  showQuote(quoteIndex);
+}
+
+// ─── BOOT ──────────────────────────────────────────────────────────────────
+function bootMain(){
+  document.getElementById('onboard').classList.add('hidden');
+  document.getElementById('main-view').style.display = 'block';
+
+  // Google state
+  if(googleToken){
+    document.getElementById('google-banner').classList.add('visible');
+    document.getElementById('google-section').classList.add('visible');
+    document.getElementById('connect-prompt').style.display = 'none';
+    loadAllGoogleData();
+  } else {
+    document.getElementById('google-banner').classList.remove('visible');
+    document.getElementById('google-section').classList.remove('visible');
+    document.getElementById('connect-prompt').style.display = 'block';
+  }
+
+  // Greeting
+  const now = new Date();
+  const period = getPeriod(now.getHours());
+  document.getElementById('greeting').innerHTML =
+    fmt(pick(GREETINGS[period]), userName) + '<span class="cursor"></span>';
+
+  // Intel feed
+  document.getElementById('f-focus').textContent = pick(FOCUS[period]);
+  document.getElementById('f-focus-meta').textContent =
+    'cognitive window: ' + period.replace('earlyMorning','early morning');
+  document.getElementById('f-period').textContent = PERIOD_INFO[period][0];
+  document.getElementById('f-period-meta').textContent = PERIOD_INFO[period][1];
+
+  const sysFacts = [
+    ['timezone: ' + Intl.DateTimeFormat().resolvedOptions().timeZone.toLowerCase(), 'detected from browser'],
+    ['locale: ' + navigator.language.toLowerCase(), 'browser locale'],
+    ['diagnostics: passed', '0 errors detected'],
+    ['connection: ' + (navigator.onLine ? 'online' : 'offline'), 'network status'],
+  ];
+  const sf = pick(sysFacts);
+  document.getElementById('f-sys').textContent = sf[0];
+  document.getElementById('f-sys-meta').textContent = sf[1];
+
+  document.getElementById('intel-ts').textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  // Quote
+  quoteIndex = Math.floor(Math.random() * QUOTES.length);
+  showQuote(quoteIndex);
+
+  // Location
+  updateFooter();
+  detectLocation();
+
+  // Tick
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ─── TICK ──────────────────────────────────────────────────────────────────
+function tick(){
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+
+  document.getElementById('c-hm').textContent = `${pad(h)}:${pad(m)}`;
+  document.getElementById('c-s').textContent  = `:${pad(s)}`;
+
+  const DAYS   = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+  document.getElementById('c-date').textContent =
+    `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+
+  const doy = getDOY(now);
+  const wk  = getWk(now);
+  document.getElementById('c-doy').textContent = `day ${String(doy).padStart(3,'0')}`;
+  document.getElementById('c-wk').textContent  = `wk ${pad(wk)}`;
+
+  // Day progress
+  const elapsed = h * 3600 + m * 60 + s;
+  const dayPct  = elapsed / 86400 * 100;
+  document.getElementById('pf-day').style.width = dayPct + '%';
+  document.getElementById('prog-day-info').textContent =
+    `${Math.floor(dayPct)}% · ${23-h}h ${59-m}m left`;
+
+  // Week progress
+  const weekPct = (now.getDay() / 7 * 100) + (elapsed / 86400 / 7 * 100);
+  document.getElementById('pf-week').style.width = Math.min(weekPct, 100) + '%';
+  document.getElementById('prog-week-info').textContent =
+    `${Math.floor(weekPct)}% · ${6 - now.getDay()}d left`;
+
+  // Year progress
+  const diy     = getDIY(now.getFullYear());
+  const yearPct = doy / diy * 100;
+  document.getElementById('pf-year').style.width = yearPct + '%';
+  document.getElementById('prog-year-info').textContent =
+    `${Math.floor(yearPct)}% · ${diy - doy}d left`;
+
+  // Session uptime
+  const el = Date.now() - sessionStart;
+  const ss = Math.floor(el / 1000) % 60;
+  const mm = Math.floor(el / 60000) % 60;
+  const hh = Math.floor(el / 3600000);
+  document.getElementById('session-up').textContent = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+
+  // Dynamic page title — updates every minute
+  if(s === 0 || document._titleInit === undefined){
+    document._titleInit = true;
+    const doy2 = getDOY(now);
+    const diy2 = getDIY(now.getFullYear());
+    const yPct = Math.floor(doy2 / diy2 * 100);
+    const dPct = Math.floor((h * 3600 + m * 60) / 86400 * 100);
+    document.title = `${pad(h)}:${pad(m)} · ${dPct}% day · InitLife`;
+  }
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+document.getElementById('ob-name')
+  .addEventListener('keydown', e => { if(e.key === 'Enter') saveProfile(); });
+
+// ── Apple Touch Icon (iOS requires PNG, not SVG) ──────────────────────────
+(function generateAppleTouchIcon(){
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 180;
+    const ctx = c.getContext('2d');
+    // Background
+    ctx.fillStyle = '#0a0a0a';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, 180, 180, 32);
+    ctx.fill();
+    // Cursor underscore character
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 110px monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('_', 26, 128);
+    const link = document.getElementById('apple-touch-icon-link');
+    if(link) link.href = c.toDataURL('image/png');
+  } catch(e){}
+})();
+
+// ── Service Worker (required for Chrome install prompt) ───────────────────
+if('serviceWorker' in navigator){
+  // Inline service worker as a blob URL — no separate sw.js file needed
+  const swCode = `
+    const CACHE = 'initlife-v1';
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(clients.claim());
+    });
+    self.addEventListener('fetch', e => {
+      // Network-first: always try live, fall back to cache
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl, { scope: './' })
+    .catch(() => {}); // Fail silently — doesn't break the app
+}
+
+// ── PWA Install ────────────────────────────────────────────────────────────
+let _deferredInstallPrompt = null;
+
+// Android/Chrome: capture the native install prompt
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  showInstallBanner('android');
+});
+
+// Detect if already installed as standalone
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+
+function showInstallBanner(platform){
+  const dismissed = localStorage.getItem('initlife_install_dismissed');
+  if(dismissed || isStandalone) return;
+
+  const banner = document.getElementById('install-banner');
+  const sub    = document.getElementById('install-sub');
+  const btn    = document.getElementById('install-btn');
+
+  if(platform === 'ios'){
+    sub.innerHTML = 'tap <strong style="color:var(--fg2)">Share ↑</strong> then <strong style="color:var(--fg2)">Add to Home Screen</strong>';
+    btn.style.display = 'none'; // iOS can't use the prompt API
+  } else {
+    sub.textContent = 'install as a webapp for instant access — no app store needed';
+  }
+
+  banner.classList.add('visible');
+}
+
+function triggerInstall(){
+  if(_deferredInstallPrompt){
+    _deferredInstallPrompt.prompt();
+    _deferredInstallPrompt.userChoice.then(choice => {
+      if(choice.outcome === 'accepted') dismissInstall();
+      _deferredInstallPrompt = null;
+    });
+  }
+}
+
+function dismissInstall(){
+  document.getElementById('install-banner').classList.remove('visible');
+  try{ localStorage.setItem('initlife_install_dismissed', '1'); } catch(e){}
+}
+
+// Detect iOS Safari (no beforeinstallprompt, needs manual instructions)
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+if(isIOS && isSafari && !isStandalone){
+  // Show after a short delay so page feels loaded first
+  setTimeout(() => showInstallBanner('ios'), 2000);
+}
+
+// Handle Google OAuth redirect
+const cameFromGoogle = handleGoogleCallback();
+
+if(loadProfile() || cameFromGoogle){
+  bootMain();
+}
+</script>
+</body>
+</html>
