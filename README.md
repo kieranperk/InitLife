@@ -36,6 +36,8 @@ Built to live as a pinned tab on your PC and a home screen shortcut on your phon
 [✓] time-aware greeting with your name
 [✓] focus window suggestions based on time of day
 [✓] auto geolocation via nominatim reverse geocoding
+[✓] weather api integration (real-time conditions)
+[✓] pomodoro / focus timer mode
 [✓] google oauth 2.0 - no backend, token stays on device
     ├── google calendar  →  next event this week
     ├── gmail            →  unread count
@@ -139,10 +141,8 @@ initlife/
 ```
 [ ] google tasks integration
 [ ] custom theme / accent colour picker
-[ ] weather api integration (real-time conditions)
 [ ] configurable widgets (show/hide sections)
 [ ] offline service worker / full pwa cache
-[ ] pomodoro / focus timer mode
 ```
 
 ---

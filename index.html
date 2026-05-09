@@ -19,11 +19,12 @@
 <!-- Favicon: logo SVG inline -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a'/%3E%3Cg transform='translate(256,256)' fill='white'%3E%3Cpath fill-rule='evenodd' d='M -154,188 L 154,188 L 188,154 L 188,-154 L 154,-188 L -154,-188 L -188,-154 L -188,154 Z M -118,142 L 118,142 L 142,118 L 142,-118 L 118,-142 L -118,-142 L -142,-118 L -142,118 Z'/%3E%3Crect x='-228' y='-30' width='40' height='60'/%3E%3Crect x='188' y='-30' width='40' height='60'/%3E%3Crect x='-44' y='-96' width='88' height='22'/%3E%3Crect x='-14' y='-74' width='28' height='148'/%3E%3Crect x='-44' y='74' width='88' height='22'/%3E%3C/g%3E%3C/svg%3E">
 
-<!-- Apple touch icon: populated by JS canvas below -->
+<!-- Apple touch icon: populated via canvas JS below -->
 <link rel="apple-touch-icon" id="apple-touch-icon-link" href="">
 
-<!-- PWA Manifest: references sw.js which must be in same directory as index.html -->
-<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22InitLife%22%2C%22short_name%22%3A%22InitLife%22%2C%22description%22%3A%22Your%20life.%20One%20terminal.%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a0a%22%2C%22theme_color%22%3A%22%230a0a0a%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon-192.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22icon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<!-- PWA Manifest pointing to real PNG icons in repo -->
+<link rel="manifest" href="manifest.json">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
 
@@ -52,15 +53,8 @@ html,body{
   text-rendering:optimizeLegibility;
 }
 
-a {
-  color: var(--fg3);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--fg);
-}
+a{color:var(--fg3);text-decoration:none;transition:color 0.2s ease}
+a:hover{color:var(--fg)}
 
 #hub{
   background:var(--bg);
@@ -75,275 +69,143 @@ a:hover {
 }
 
 .scanlines{
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
+  position:fixed;top:0;left:0;right:0;bottom:0;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
-  pointer-events:none;
-  z-index:50;
+  pointer-events:none;z-index:50;
 }
 
 /* ── ONBOARDING ─────────────────────────────── */
 
 #onboard{
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  background:var(--bg);
-  z-index:200;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:40px 28px;
-  overflow-y:auto;
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:var(--bg);z-index:200;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:40px 28px;overflow-y:auto;
 }
 
 #onboard.hidden{display:none}
 
-.ob-label{
-  font-size:9px;color:var(--fg3);
-  letter-spacing:0.15em;text-transform:uppercase;
-  margin-bottom:8px;
-}
-
-.ob-title{
-  font-size:26px;font-weight:700;
-  color:var(--accent);
-  font-family:'Share Tech Mono',monospace;
-  margin-bottom:4px;
-}
-
-.ob-domain{
-  font-size:10px;color:var(--fg3);
-  margin-bottom:28px;letter-spacing:0.05em;
-}
-
+.ob-label{font-size:9px;color:var(--fg3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px}
+.ob-title{font-size:26px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-bottom:4px}
+.ob-domain{font-size:10px;color:var(--fg3);margin-bottom:28px;letter-spacing:0.05em}
 .ob-field{margin-bottom:20px}
 
 .ob-input{
-  width:100%;background:transparent;
-  border:none;border-bottom:1px solid var(--dim);
+  width:100%;background:transparent;border:none;
+  border-bottom:1px solid var(--dim);
   color:var(--accent);font-family:var(--mono);
-  font-size:16px;padding:8px 0;
-  outline:none;caret-color:var(--accent);
-  border-radius:0;
-  -webkit-appearance:none;
+  font-size:16px;padding:8px 0;outline:none;
+  caret-color:var(--accent);border-radius:0;-webkit-appearance:none;
 }
-
 .ob-input:focus{border-bottom-color:var(--fg2)}
 .ob-input::placeholder{color:var(--fg3)}
 
-.ob-divider{
-  border:none;border-top:1px solid var(--border);
-  margin:24px 0;
-}
+.ob-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
 
 .ob-google{
-  width:100%;background:transparent;
-  border:1px solid var(--dim);
-  color:var(--fg2);font-family:var(--mono);
-  font-size:11px;padding:12px;
-  cursor:pointer;letter-spacing:0.08em;
-  text-transform:uppercase;
+  width:100%;background:transparent;border:1px solid var(--dim);
+  color:var(--fg2);font-family:var(--mono);font-size:11px;padding:12px;
+  cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  margin-bottom:10px;
-  transition:border-color 0.2s,color 0.2s;
+  margin-bottom:10px;transition:border-color 0.2s,color 0.2s;
 }
-
 .ob-google:hover{border-color:var(--fg3);color:var(--fg)}
 
-.ob-google-note{
-  font-size:9px;color:var(--fg3);text-align:center;
-  margin-bottom:16px;line-height:1.5;
-}
+.ob-google-note{font-size:9px;color:var(--fg3);text-align:center;margin-bottom:16px;line-height:1.5}
 
 .ob-btn{
-  width:100%;background:var(--accent);
-  color:#000;border:none;
+  width:100%;background:var(--accent);color:#000;border:none;
   font-family:var(--mono);font-size:12px;font-weight:700;
-  padding:13px;cursor:pointer;
-  letter-spacing:0.1em;text-transform:uppercase;
+  padding:13px;cursor:pointer;letter-spacing:0.1em;text-transform:uppercase;
   -webkit-appearance:none;border-radius:0;
 }
-
 .ob-btn:active{background:var(--fg2)}
 
-.ob-skip{
-  font-size:10px;color:var(--fg3);
-  text-align:center;margin-top:14px;
-  cursor:pointer;padding:8px;
-}
+.ob-skip{font-size:10px;color:var(--fg3);text-align:center;margin-top:14px;cursor:pointer;padding:8px;display:block}
 
-/* ── MAIN ────────────────────────────────────── */
+/* ── HEADER ──────────────────────────────────── */
 
 .header{
-  padding:14px 20px 12px;
-  border-bottom:1px solid var(--border);
+  padding:12px 20px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;
-  background:var(--bg);
-  z-index:40;
+  position:sticky;top:0;background:var(--bg);z-index:40;
 }
 
 .header-left{display:flex;align-items:center;gap:8px}
 
-.status-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--fg3);
-  animation:pulse 2.5s ease-in-out infinite;
-}
-
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--fg3);animation:pulse 2.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.2}}
 
 .app-name{font-size:12px;font-weight:700;color:var(--fg2);letter-spacing:0.08em}
 .app-ver{font-size:9px;color:var(--fg3)}
+
+.header-right{display:flex;align-items:center;gap:10px}
 .session{font-size:10px;color:var(--fg3)}
+
+/* ── AVATAR ──────────────────────────────────── */
+
+#avatar-wrap{
+  display:none; /* shown when google connected */
+  width:26px;height:26px;border-radius:50%;
+  overflow:hidden;border:1px solid var(--dim);
+  flex-shrink:0;cursor:default;
+}
+#avatar-wrap.visible{display:block}
+#avatar-img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
 
 /* ── CLOCK ───────────────────────────────────── */
 
-.clock-block{
-  padding:24px 20px 18px;
-  border-bottom:1px solid var(--border);
-}
-
+.clock-block{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
 .clock-row{display:flex;align-items:baseline;gap:4px}
-
-.clock-hm{
-  font-size:54px;font-weight:700;letter-spacing:-3px;
-  color:var(--accent);line-height:1;
-  font-family:'Share Tech Mono',monospace;
-}
-
+.clock-hm{font-size:54px;font-weight:700;letter-spacing:-3px;color:var(--accent);line-height:1;font-family:'Share Tech Mono',monospace}
 .clock-s{font-size:22px;color:var(--fg3);font-weight:300}
-
-.clock-date{
-  font-size:11px;color:var(--fg2);
-  margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;
-}
-
+.clock-date{font-size:11px;color:var(--fg2);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
 .clock-date span{color:var(--fg3)}
 
 /* ── GREETING ────────────────────────────────── */
 
-.greeting-block{
-  padding:14px 20px;
-  border-bottom:1px solid var(--border);
-}
-
-.block-label{
-  font-size:9px;color:var(--fg3);
-  letter-spacing:0.12em;text-transform:uppercase;
-  margin-bottom:5px;
-}
-
-.greeting-text{
-  font-size:14px;color:var(--fg);
-  display:flex;align-items:center;gap:5px;line-height:1.5;
-}
-
-.cursor{
-  display:inline-block;width:2px;height:14px;
-  background:var(--accent);
-  animation:blink 1s step-end infinite;
-  vertical-align:middle;flex-shrink:0;
-}
-
+.greeting-block{padding:14px 20px;border-bottom:1px solid var(--border)}
+.block-label{font-size:9px;color:var(--fg3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px}
+.greeting-text{font-size:14px;color:var(--fg);display:flex;align-items:center;gap:5px;line-height:1.5}
+.cursor{display:inline-block;width:2px;height:14px;background:var(--accent);animation:blink 1s step-end infinite;vertical-align:middle;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* ── PROGRESS ────────────────────────────────── */
 
-.progress-block{
-  padding:14px 20px;
-  border-bottom:1px solid var(--border);
-}
-
+.progress-block{padding:14px 20px;border-bottom:1px solid var(--border)}
 .prog-row{margin-bottom:10px}
 .prog-row:last-child{margin-bottom:0}
-
-.prog-label{
-  display:flex;justify-content:space-between;
-  font-size:9px;color:var(--fg3);
-  margin-bottom:5px;letter-spacing:0.05em;
-}
-
+.prog-label{display:flex;justify-content:space-between;font-size:9px;color:var(--fg3);margin-bottom:5px;letter-spacing:0.05em}
 .prog-track{height:2px;background:var(--bg3);overflow:hidden}
-
-.prog-fill{
-  height:100%;background:var(--fg3);
-  transition:width 1.2s ease;
-}
-
+.prog-fill{height:100%;background:var(--fg3);transition:width 1.2s ease}
 .prog-fill.bright{background:var(--fg2)}
 
 /* ── SECTION ─────────────────────────────────── */
 
 .section{border-bottom:1px solid var(--border)}
-
-.section-header{
-  padding:9px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg2);
-}
-
-.section-title{
-  font-size:9px;color:var(--fg3);
-  letter-spacing:0.15em;text-transform:uppercase;
-}
-
+.section-header{padding:9px 20px;display:flex;align-items:center;justify-content:space-between;background:var(--bg2)}
+.section-title{font-size:9px;color:var(--fg3);letter-spacing:0.15em;text-transform:uppercase}
 .section-meta{font-size:9px;color:var(--fg3)}
-
 .section-body{padding:2px 0}
 
 /* ── FEED ITEMS ──────────────────────────────── */
 
-.feed-item{
-  padding:10px 20px;
-  display:flex;align-items:flex-start;gap:10px;
-  border-bottom:1px solid #0f0f0f;
-}
-
+.feed-item{padding:10px 20px;display:flex;align-items:flex-start;gap:10px;border-bottom:1px solid #0f0f0f}
 .feed-item:last-child{border-bottom:none}
-
-.feed-tag{
-  font-size:8px;letter-spacing:0.1em;text-transform:uppercase;
-  padding:2px 5px;border:1px solid var(--dim);
-  color:var(--fg3);white-space:nowrap;flex-shrink:0;margin-top:2px;
-}
-
+.feed-tag{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 5px;border:1px solid var(--dim);color:var(--fg3);white-space:nowrap;flex-shrink:0;margin-top:2px}
 .feed-tag.google{border-color:#333;color:#888}
-
 .feed-content{flex:1;min-width:0}
-
 .feed-title{font-size:12px;color:var(--fg);line-height:1.4}
 .feed-title.dim{color:var(--fg3)}
-
 .feed-meta{font-size:9px;color:var(--fg3);margin-top:2px}
 
 /* ── GOOGLE CONNECTED BANNER ─────────────────── */
 
-#google-banner{
-  padding:10px 20px;
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  display:none;
-  align-items:center;justify-content:space-between;
-}
-
+#google-banner{padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:none;align-items:center;justify-content:space-between}
 #google-banner.visible{display:flex}
-
-.g-badge{
-  font-size:9px;color:var(--fg3);letter-spacing:0.1em;
-  display:flex;align-items:center;gap:6px;
-}
-
-.g-dot{
-  width:4px;height:4px;border-radius:50%;
-  background:#4ade80;opacity:0.7;
-}
-
-.g-disconnect{
-  font-size:9px;color:var(--fg3);cursor:pointer;
-  padding:2px 0;
-}
-
+.g-badge{font-size:9px;color:var(--fg3);letter-spacing:0.1em;display:flex;align-items:center;gap:6px}
+.g-dot{width:4px;height:4px;border-radius:50%;background:#4ade80;opacity:0.7}
+.g-disconnect{font-size:9px;color:var(--fg3);cursor:pointer;padding:2px 0}
 .g-disconnect:hover{color:var(--fg2)}
 
 /* ── GOOGLE DATA SECTION ─────────────────────── */
@@ -351,131 +213,95 @@ a:hover {
 #google-section{display:none}
 #google-section.visible{display:block}
 
+/* ── POMODORO ─────────────────────────────────── */
+
+.pomo-btn{
+  background:var(--accent);color:#000;border:none;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  padding:6px 14px;cursor:pointer;letter-spacing:0.08em;
+  text-transform:lowercase;-webkit-appearance:none;border-radius:0;
+  touch-action:manipulation;transition:background 0.15s;
+}
+.pomo-btn:active{background:var(--fg2)}
+.pomo-btn--ghost{
+  background:transparent;color:var(--fg2);
+  border:1px solid var(--dim);
+}
+.pomo-btn--ghost:active{background:var(--bg3)}
+
+.pomo-dot{
+  width:7px;height:7px;border-radius:50%;
+  border:1px solid var(--fg3);
+  transition:background 0.3s,border-color 0.3s;
+}
+.pomo-dot.done{background:var(--fg3);border-color:var(--fg3)}
+.pomo-dot.active{background:var(--fg2);border-color:var(--fg2)}
+
 /* ── QUOTE ───────────────────────────────────── */
 
-.quote-block{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-}
-
-.quote-text{
-  font-size:11px;color:var(--fg3);
-  line-height:1.8;
-  border-left:1px solid var(--dim);
-  padding-left:12px;
-}
-
-.quote-author{
-  font-size:9px;color:var(--fg3);
-  margin-top:6px;letter-spacing:0.05em;
-}
+.quote-block{padding:16px 20px;border-bottom:1px solid var(--border)}
+.quote-text{font-size:11px;color:var(--fg3);line-height:1.8;border-left:1px solid var(--dim);padding-left:12px}
+.quote-author{font-size:9px;color:var(--fg3);margin-top:6px;letter-spacing:0.05em}
 
 /* ── CONNECT PROMPT ──────────────────────────── */
 
-#connect-prompt{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-}
-
-.connect-text{
-  font-size:11px;color:var(--fg3);line-height:1.7;
-  margin-bottom:10px;
-}
-
+#connect-prompt{padding:16px 20px;border-bottom:1px solid var(--border)}
+.connect-text{font-size:11px;color:var(--fg3);line-height:1.7;margin-bottom:10px}
 .connect-btn{
-  background:transparent;
-  border:1px solid var(--dim);
-  color:var(--fg2);font-family:var(--mono);
-  font-size:10px;padding:8px 14px;
-  cursor:pointer;letter-spacing:0.08em;
-  text-transform:uppercase;
+  background:transparent;border:1px solid var(--dim);color:var(--fg2);
+  font-family:var(--mono);font-size:10px;padding:8px 14px;cursor:pointer;
+  letter-spacing:0.08em;text-transform:uppercase;
   display:inline-flex;align-items:center;gap:8px;
 }
-
 .connect-btn:hover{border-color:var(--fg3);color:var(--fg)}
 
 /* ── FOOTER ──────────────────────────────────── */
 
-.footer{
-  padding:10px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:6px;
-}
+.footer{padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);font-size:10px;flex-wrap:wrap;gap:8px}
+.footer-left{color:var(--fg3);letter-spacing:0.08em}
+.footer-right{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.footer-link{display:flex;align-items:center;gap:6px;color:var(--fg3);cursor:pointer;user-select:none;transition:color 0.2s ease}
+.footer-link svg{width:14px;height:14px;stroke:currentColor;fill:none;flex-shrink:0}
+.footer-link:hover{color:var(--fg)}
 
-.footer-l,.footer-r{font-size:9px;color:var(--fg3)}
+/* ── INSTALL BANNER ──────────────────────────── */
 
-.footer-r{
-  display:flex;align-items:center;gap:12px;
-}
-
-.footer-btn{cursor:pointer;padding:2px 0}
-.footer-btn:hover{color:var(--fg2)}
-
-/* ── INSTALL BANNER ──────────────────────────────── */
-
-#install-banner{
-  display:none;
-  padding:12px 20px;
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  gap:10px;
-  align-items:flex-start;
-}
-#install-banner.visible{ display:flex; }
-.install-icon{ font-size:16px;flex-shrink:0;margin-top:1px; }
-.install-body{ flex:1;min-width:0; }
-.install-title{ font-size:11px;color:var(--fg);margin-bottom:3px;font-weight:500; }
-.install-sub{ font-size:10px;color:var(--fg3);line-height:1.6; }
-.install-actions{ display:flex;gap:8px;margin-top:10px;flex-wrap:wrap; }
+#install-banner{display:none;padding:12px 20px;background:var(--bg2);border-bottom:1px solid var(--border);gap:10px;align-items:flex-start}
+#install-banner.visible{display:flex}
+.install-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.install-body{flex:1;min-width:0}
+.install-title{font-size:11px;color:var(--fg);margin-bottom:3px;font-weight:500}
+.install-sub{font-size:10px;color:var(--fg3);line-height:1.6}
+.install-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .install-btn{
-  background:var(--accent);color:#000;border:none;
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  padding:6px 12px;cursor:pointer;letter-spacing:0.08em;
-  text-transform:uppercase;-webkit-appearance:none;border-radius:0;
-  touch-action:manipulation;
+  background:var(--accent);color:#000;border:none;font-family:var(--mono);
+  font-size:10px;font-weight:700;padding:6px 12px;cursor:pointer;
+  letter-spacing:0.08em;text-transform:uppercase;-webkit-appearance:none;border-radius:0;touch-action:manipulation;
 }
-.install-dismiss{
-  font-size:10px;color:var(--fg3);cursor:pointer;
-  padding:6px 0;touch-action:manipulation;
-}
-.install-dismiss:hover{ color:var(--fg2); }
+.install-dismiss{font-size:10px;color:var(--fg3);cursor:pointer;padding:6px 0;touch-action:manipulation}
+.install-dismiss:hover{color:var(--fg2)}
 
-/* ── SYNC REFRESH ────────────────────────────────── */
+/* ── SYNC REFRESH ────────────────────────────── */
 
-.sync-meta{ display:flex;align-items:center;gap:8px; }
-.sync-refresh{
-  font-size:12px;color:var(--fg3);cursor:pointer;
-  padding:0 2px;touch-action:manipulation;
-  display:inline-block;line-height:1;
-}
-.sync-refresh:hover{ color:var(--fg2); }
-.sync-refresh.spinning{ animation:spin 0.5s linear; }
-@keyframes spin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.sync-meta{display:flex;align-items:center;gap:8px}
+.sync-refresh{font-size:12px;color:var(--fg3);cursor:pointer;padding:0 2px;touch-action:manipulation;display:inline-block;line-height:1}
+.sync-refresh:hover{color:var(--fg2)}
+.sync-refresh.spinning{animation:spin 0.5s linear}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* ── TOUCH / MOBILE ──────────────────────────── */
 
-button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
-  touch-action:manipulation;
-}
+button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-action:manipulation}
 
 @media(max-width:480px){
   .clock-hm{font-size:44px;letter-spacing:-2px}
   .clock-s{font-size:18px}
   .clock-date{font-size:10px;gap:6px}
-
-  .header,.greeting-block,.progress-block,
-  .feed-item,.quote-block,.footer,#connect-prompt,
-  #google-banner,.clock-block{
-    padding-left:16px;padding-right:16px;
-  }
-
+  .header,.greeting-block,.progress-block,.feed-item,.quote-block,.footer,#connect-prompt,#google-banner,.clock-block{padding-left:16px;padding-right:16px}
   .section-header{padding-left:16px;padding-right:16px}
-
   .feed-title{font-size:11px}
   .feed-meta{font-size:8px}
   .quote-text{font-size:10px;line-height:1.7}
-  .footer{gap:8px}
-  .footer-l,.footer-r,.footer-btn{font-size:8px}
   .ob-title{font-size:22px}
   .ob-domain{font-size:9px}
   .ob-input{font-size:16px}
@@ -495,15 +321,13 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
 
   <div class="ob-field">
     <div class="ob-label">your name</div>
-    <input class="ob-input" id="ob-name" type="text"
-      placeholder="e.g. alex" autocomplete="off" spellcheck="false"/>
+    <input class="ob-input" id="ob-name" type="text" placeholder="e.g. alex" autocomplete="off" spellcheck="false"/>
   </div>
 
   <button class="ob-btn" onclick="saveProfile()">initialise →</button>
 
   <hr class="ob-divider">
 
-  <!-- Google OAuth – optional at setup -->
   <button class="ob-google" onclick="startGoogleAuth()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -518,7 +342,7 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
     no backend. all tokens stay on your device.
   </div>
 
-  <div class="ob-skip" onclick="skipSetup()">skip for now</div>
+  <span class="ob-skip" onclick="skipSetup()">skip for now</span>
   <a class="ob-skip" href="privacy.html">privacy policy</a>
 </div>
 
@@ -529,12 +353,18 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
     <div class="header-left">
       <div class="status-dot"></div>
       <span class="app-name">initlife.app</span>
-      <span class="app-ver">v2.1</span>
+      <span class="app-ver">v2.2</span>
     </div>
-    <div class="session" id="session-up">00:00:00</div>
+    <div class="header-right">
+      <div class="session" id="session-up">00:00:00</div>
+      <!-- Monochrome avatar — only shown when Google connected -->
+      <div id="avatar-wrap">
+        <img id="avatar-img" src="" alt="profile" crossorigin="anonymous"/>
+      </div>
+    </div>
   </div>
 
-  <!-- Install banner (shown when applicable) -->
+  <!-- Install banner -->
   <div id="install-banner">
     <div class="install-icon">⬇</div>
     <div class="install-body">
@@ -580,29 +410,20 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
   <!-- Progress bars -->
   <div class="progress-block">
     <div class="prog-row">
-      <div class="prog-label">
-        <span>day</span>
-        <span id="prog-day-info">0% · 24h left</span>
-      </div>
+      <div class="prog-label"><span>day</span><span id="prog-day-info">0% · 24h left</span></div>
       <div class="prog-track"><div class="prog-fill bright" id="pf-day" style="width:0%"></div></div>
     </div>
     <div class="prog-row">
-      <div class="prog-label">
-        <span>week</span>
-        <span id="prog-week-info">0% · 7d left</span>
-      </div>
+      <div class="prog-label"><span>week</span><span id="prog-week-info">0% · 7d left</span></div>
       <div class="prog-track"><div class="prog-fill" id="pf-week" style="width:0%"></div></div>
     </div>
     <div class="prog-row">
-      <div class="prog-label">
-        <span>year</span>
-        <span id="prog-year-info">0% · 365d left</span>
-      </div>
+      <div class="prog-label"><span>year</span><span id="prog-year-info">0% · 365d left</span></div>
       <div class="prog-track"><div class="prog-fill" id="pf-year" style="width:0%"></div></div>
     </div>
   </div>
 
-  <!-- Google data section (visible when connected) -->
+  <!-- Google data section -->
   <div id="google-section" class="section">
     <div class="section-header">
       <span class="section-title">// google sync</span>
@@ -611,7 +432,7 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
         <span class="sync-refresh" id="sync-refresh-btn" onclick="manualSync()" title="refresh">↻</span>
       </div>
     </div>
-    <div class="section-body" id="google-feed">
+    <div class="section-body">
       <div class="feed-item">
         <div class="feed-tag google">cal</div>
         <div class="feed-content">
@@ -636,6 +457,32 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
     </div>
   </div>
 
+  <!-- Pomodoro timer -->
+  <div class="section" id="pomo-section">
+    <div class="section-header">
+      <span class="section-title">// focus.timer</span>
+      <span class="section-meta" id="pomo-status-label">idle</span>
+    </div>
+    <div id="pomo-body" style="padding:14px 20px">
+      <!-- Timer display -->
+      <div id="pomo-display" style="margin-bottom:12px">
+        <div id="pomo-time" style="font-size:36px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--accent);letter-spacing:-1px;line-height:1">25:00</div>
+        <div id="pomo-label" style="font-size:9px;color:var(--fg3);letter-spacing:0.12em;text-transform:uppercase;margin-top:4px">work session · 1 of 4</div>
+      </div>
+      <!-- ASCII progress bar -->
+      <div id="pomo-bar" style="font-size:11px;color:var(--fg3);font-family:'Share Tech Mono',monospace;margin-bottom:14px;letter-spacing:0">[<span id="pomo-fill"></span><span id="pomo-empty"></span>] <span id="pomo-pct">0%</span></div>
+      <!-- Controls -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="pomo-btn" id="pomo-start" onclick="pomoStart()">▶ start</button>
+        <button class="pomo-btn" id="pomo-pause" onclick="pomoPause()" style="display:none">⏸ pause</button>
+        <button class="pomo-btn pomo-btn--ghost" onclick="pomoReset()">↺ reset</button>
+        <button class="pomo-btn pomo-btn--ghost" onclick="pomoSkip()">⤳ skip</button>
+      </div>
+      <!-- Session dots -->
+      <div id="pomo-dots" style="display:flex;gap:6px;margin-top:12px"></div>
+    </div>
+  </div>
+
   <!-- Intel feed -->
   <div class="section">
     <div class="section-header">
@@ -657,6 +504,13 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
           <div class="feed-meta" id="f-focus-meta">cognitive window</div>
         </div>
       </div>
+      <div class="feed-item" id="weather-item">
+        <div class="feed-tag">wthr</div>
+        <div class="feed-content">
+          <div class="feed-title dim" id="f-weather">fetching conditions...</div>
+          <div class="feed-meta" id="f-weather-meta">open-meteo · local</div>
+        </div>
+      </div>
       <div class="feed-item">
         <div class="feed-tag">loc</div>
         <div class="feed-content">
@@ -674,13 +528,13 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
     </div>
   </div>
 
-  <!-- Google connect prompt (visible when NOT connected) -->
+  <!-- Google connect prompt -->
   <div id="connect-prompt" class="section">
     <div class="section-header">
       <span class="section-title">// google sync</span>
       <span class="section-meta">not connected</span>
     </div>
-    <div style="padding:14px 20px;">
+    <div style="padding:14px 20px">
       <div class="connect-text">
         // connect your google account to unlock<br>
         calendar events · gmail unread count · birthday reminders<br>
@@ -711,11 +565,24 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
 
   <!-- Footer -->
   <div class="footer">
-    <div class="footer-l" id="f-left">initlife.app · locating...</div>
-    <div class="footer-r">
-      <a class="footer-btn" href="privacy.html">privacy policy</a>
-      <span class="footer-btn" onclick="cycleQuote()">↻ quote</span>
-      <span class="footer-btn" onclick="resetProfile()">⟳ reset</span>
+    <div class="footer-left">initlife.app</div>
+    <div class="footer-right">
+      <a class="footer-link" href="privacy.html">
+        <svg viewBox="0 0 24 24"><path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        privacy
+      </a>
+      <a class="footer-link" href="https://github.com/kieranperk/InitLife" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.77.6-3.36-1.19-3.36-1.19-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.21-.25-4.54-1.11-4.54-4.92 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0112 6.8c.85 0 1.71.11 2.5.33 1.9-1.29 2.74-1.02 2.74-1.02.55 1.41.2 2.46.1 2.72.64.7 1.03 1.59 1.03 2.68 0 3.82-2.34 4.66-4.57 4.91.36.31.68.92.68 1.86v2.75c0 .26.18.58.69.48A10 10 0 0012 2z" fill="currentColor"/></svg>
+        github
+      </a>
+      <span class="footer-link" onclick="cycleQuote()">
+        <svg viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M20 4a9 9 0 00-16 6M4 20a9 9 0 0016-6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        quote
+      </span>
+      <span class="footer-link" onclick="resetProfile()">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 101.8-5.4M3 4v6h6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        reset
+      </span>
     </div>
   </div>
 
@@ -724,13 +591,6 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
 
 <script>
 // ─── CONFIG ────────────────────────────────────────────────────────────────
-// To enable Google sync:
-// 1. Create a project at console.cloud.google.com
-// 2. Enable Calendar API, Gmail API, People API
-// 3. Create an OAuth 2.0 Client ID (Web Application)
-// 4. Add https://initlife.app as an authorised JavaScript origin
-// 5. Add https://initlife.app as an authorised redirect URI
-// 6. Paste your Client ID below
 const GOOGLE_CLIENT_ID = '22715367783-gtp43s4acstbg085c92vd8t5evf3gfdk.apps.googleusercontent.com';
 const GOOGLE_SCOPES = [
   'openid',
@@ -785,13 +645,13 @@ const PERIOD_INFO={
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
 let sessionStart = Date.now();
-let userName = 'user';
+let userName     = 'user';
 let userLocation = 'locating...';
-let googleToken = null;
-let quoteIndex = 0;
+let googleToken  = null;
+let quoteIndex   = 0;
 
 // ─── UTILS ─────────────────────────────────────────────────────────────────
-const pad = n => String(n).padStart(2,'0');
+const pad  = n => String(n).padStart(2,'0');
 const getDOY = d => Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000);
 const getWk  = d => Math.ceil(((d - new Date(d.getFullYear(),0,1)) / 86400000 + new Date(d.getFullYear(),0,1).getDay() + 1) / 7);
 const getDIY = y => (y%4===0 && (y%100!==0 || y%400===0)) ? 366 : 365;
@@ -814,12 +674,9 @@ function loadProfile(){
       const p = JSON.parse(raw);
       userName = p.name || 'user';
       if(p.location) userLocation = p.location;
-      if(p.googleToken) {
+      if(p.googleToken){
         googleToken = p.googleToken;
-        // Check if token is expired
-        if(p.googleTokenExpiry && Date.now() > p.googleTokenExpiry){
-          googleToken = null;
-        }
+        if(p.googleTokenExpiry && Date.now() > p.googleTokenExpiry) googleToken = null;
       }
       return true;
     }
@@ -830,12 +687,7 @@ function loadProfile(){
 function saveToStorage(extra={}){
   try{
     const current = JSON.parse(localStorage.getItem('initlife_profile') || '{}');
-    localStorage.setItem('initlife_profile', JSON.stringify({
-      ...current,
-      name: userName,
-      location: userLocation,
-      ...extra,
-    }));
+    localStorage.setItem('initlife_profile', JSON.stringify({...current, name:userName, location:userLocation, ...extra}));
   } catch(e){}
 }
 
@@ -846,10 +698,7 @@ function saveProfile(){
   bootMain();
 }
 
-function skipSetup(){
-  userName = 'user';
-  bootMain();
-}
+function skipSetup(){ userName = 'user'; bootMain(); }
 
 function resetProfile(){
   try{ localStorage.removeItem('initlife_profile'); } catch(e){}
@@ -861,60 +710,47 @@ function resetProfile(){
 
 // ─── LOCATION ──────────────────────────────────────────────────────────────
 function updateFooter(){
-  document.getElementById('f-left').textContent = `initlife.app · ${userLocation}`;
+  // footer-left is just the brand; location lives in the loc feed item
 }
 
 function setLocationFallback(reason='unavailable'){
   userLocation = `location ${reason}`;
   document.getElementById('f-loc').textContent = reason === 'denied' ? 'location access denied' : 'location unavailable';
   document.getElementById('f-loc-meta').textContent = reason === 'denied' ? 'enable in browser settings' : 'geolocation error';
-  updateFooter();
 }
 
 async function detectLocation(){
   if(!navigator.geolocation){ setLocationFallback(); return; }
-
   navigator.geolocation.getCurrentPosition(
     async pos => {
       const { latitude: lat, longitude: lon } = pos.coords;
-      document.getElementById('f-loc').textContent = `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+      document.getElementById('f-loc').textContent = `${lat.toFixed(3)}°, ${lon.toFixed(3)}°`;
       document.getElementById('f-loc-meta').textContent = 'resolving address...';
-
       try{
-        // Nominatim requires a descriptive User-Agent via email param for policy compliance
         const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=user@initlife.app`;
         const res = await fetch(url);
         if(!res.ok) throw new Error('nominatim error');
         const data = await res.json();
-
-        const city = data.address.city
-          || data.address.town
-          || data.address.village
-          || data.address.county
-          || 'unknown';
+        const city = data.address.city || data.address.town || data.address.village || data.address.county || 'unknown';
         const country = (data.address.country_code || 'xx').toLowerCase();
-
         userLocation = `${city.toLowerCase()}, ${country}`;
         document.getElementById('f-loc').textContent = userLocation;
         document.getElementById('f-loc-meta').textContent = `${lat.toFixed(4)}° ${lon.toFixed(4)}°`;
-        updateFooter();
         saveToStorage();
+        fetchWeather(lat, lon); // weather now has a resolved city
       } catch(e){
-        // Fallback: show coords even if reverse geocode fails
         userLocation = `${lat.toFixed(3)}°, ${lon.toFixed(3)}°`;
         document.getElementById('f-loc').textContent = userLocation;
         document.getElementById('f-loc-meta').textContent = 'reverse geocode failed';
-        updateFooter();
+        fetchWeather(lat, lon);
       }
     },
-    err => {
-      setLocationFallback(err.code === 1 ? 'denied' : 'unavailable');
-    },
-    { timeout: 8000, maximumAge: 300000 } // cache position for 5 min
+    err => setLocationFallback(err.code === 1 ? 'denied' : 'unavailable'),
+    { timeout: 8000, maximumAge: 300000 }
   );
 }
 
-// ─── GOOGLE AUTH (OAuth 2.0 implicit/token flow) ───────────────────────────
+// ─── GOOGLE AUTH ───────────────────────────────────────────────────────────
 function startGoogleAuth(){
   const params = new URLSearchParams({
     client_id:     GOOGLE_CLIENT_ID,
@@ -924,22 +760,18 @@ function startGoogleAuth(){
     include_granted_scopes: 'true',
     state:         'google_auth',
   });
-
   window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
 }
 
 function handleGoogleCallback(){
-  const hash = new URLSearchParams(window.location.hash.slice(1));
-  const token = hash.get('access_token');
+  const hash      = new URLSearchParams(window.location.hash.slice(1));
+  const token     = hash.get('access_token');
   const expiresIn = hash.get('expires_in');
-  const state = hash.get('state');
-
+  const state     = hash.get('state');
   if(token && state === 'google_auth'){
     googleToken = token;
-    const expiry = Date.now() + (parseInt(expiresIn) * 1000);
-
+    const expiry = Date.now() + parseInt(expiresIn) * 1000;
     saveToStorage({ googleToken: token, googleTokenExpiry: expiry });
-
     window.history.replaceState({}, document.title, window.location.pathname);
     return true;
   }
@@ -948,80 +780,60 @@ function handleGoogleCallback(){
 
 function disconnectGoogle(){
   googleToken = null;
-  saveToStorage({ googleToken: null, googleTokenExpiry: null });
+  saveToStorage({ googleToken: null, googleTokenExpiry: null, avatarUrl: null });
   document.getElementById('google-banner').classList.remove('visible');
   document.getElementById('google-section').classList.remove('visible');
   document.getElementById('connect-prompt').style.display = 'block';
+  document.getElementById('avatar-wrap').classList.remove('visible');
 }
 
-// ─── GOOGLE API CALLS ──────────────────────────────────────────────────────
+// ─── GOOGLE API ────────────────────────────────────────────────────────────
 async function googleFetch(url){
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${googleToken}` }
-  });
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${googleToken}` } });
   if(res.status === 401){ disconnectGoogle(); throw new Error('token expired'); }
+  if(!res.ok) throw new Error(`api error ${res.status}`);
   return res.json();
 }
 
 async function loadGoogleCalendar(){
-  const el = document.getElementById('g-cal');
-  const meta = document.getElementById('g-cal-meta');
+  const el = document.getElementById('g-cal'), meta = document.getElementById('g-cal-meta');
   try{
     const now = new Date().toISOString();
     const end = new Date(Date.now() + 7 * 86400000).toISOString();
-    const data = await googleFetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&timeMax=${end}&maxResults=3&orderBy=startTime&singleEvents=true`
-    );
+    const data = await googleFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&timeMax=${end}&maxResults=3&orderBy=startTime&singleEvents=true`);
     const events = data.items || [];
-    if(events.length === 0){
-      el.textContent = 'no upcoming events';
-      meta.textContent = 'next 7 days clear';
-    } else {
-      const next = events[0];
-      const start = next.start.dateTime
-        ? new Date(next.start.dateTime).toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})
-        : new Date(next.start.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-      el.textContent = next.summary || 'untitled event';
-      el.classList.remove('dim');
-      meta.textContent = `${start} · ${events.length} event${events.length>1?'s':''} this week`;
-    }
-  } catch(e){
-    el.textContent = 'calendar unavailable';
-    meta.textContent = e.message;
-  }
+    if(!events.length){ el.textContent = 'no upcoming events'; meta.textContent = 'next 7 days clear'; return; }
+    const next = events[0];
+    const start = next.start.dateTime
+      ? new Date(next.start.dateTime).toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})
+      : new Date(next.start.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    el.textContent = next.summary || 'untitled event';
+    el.classList.remove('dim');
+    meta.textContent = `${start} · ${events.length} event${events.length>1?'s':''} this week`;
+  } catch(e){ el.textContent = 'calendar unavailable'; meta.textContent = e.message; }
 }
 
 async function loadGmailUnread(){
-  const el = document.getElementById('g-mail');
-  const meta = document.getElementById('g-mail-meta');
+  const el = document.getElementById('g-mail'), meta = document.getElementById('g-mail-meta');
   try{
+    // FIX: labelIds must be passed as repeated params, not comma-separated
     const data = await googleFetch(
-      'https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX,UNREAD&maxResults=1'
+      'https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&labelIds=UNREAD&maxResults=1'
     );
     const count = data.resultSizeEstimate || 0;
-    el.textContent = count === 0
-      ? 'inbox zero — nice'
-      : `${count} unread message${count !== 1 ? 's' : ''}`;
+    el.textContent = count === 0 ? 'inbox zero — nice' : `${count} unread message${count !== 1 ? 's' : ''}`;
     el.classList.remove('dim');
     meta.textContent = 'gmail · primary inbox';
-  } catch(e){
-    el.textContent = 'gmail unavailable';
-    meta.textContent = e.message;
-  }
+  } catch(e){ el.textContent = 'gmail unavailable'; meta.textContent = e.message; }
 }
 
 async function loadBirthdays(){
-  const el   = document.getElementById('g-bday');
-  const meta = document.getElementById('g-bday-meta');
-  const item = document.getElementById('bday-item');
+  const el = document.getElementById('g-bday'), meta = document.getElementById('g-bday-meta'), item = document.getElementById('bday-item');
   try{
-    const data = await googleFetch(
-      'https://people.googleapis.com/v1/people/me/connections?personFields=names,birthdays&pageSize=100'
-    );
+    const data = await googleFetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,birthdays&pageSize=100');
     const contacts = data.connections || [];
     const today = new Date();
     const upcoming = [];
-
     contacts.forEach(c => {
       if(!c.birthdays) return;
       c.birthdays.forEach(b => {
@@ -1030,63 +842,273 @@ async function loadBirthdays(){
         const bday = new Date(today.getFullYear(), month - 1, day);
         if(bday < today) bday.setFullYear(today.getFullYear() + 1);
         const diff = Math.round((bday - today) / 86400000);
-        if(diff <= 14){
-          const name = c.names?.[0]?.displayName || 'someone';
-          upcoming.push({ name, diff });
-        }
+        if(diff <= 14) upcoming.push({ name: c.names?.[0]?.displayName || 'someone', diff });
       });
     });
-
     upcoming.sort((a,b) => a.diff - b.diff);
+    if(!upcoming.length){ item.style.display = 'none'; return; }
+    item.style.display = 'flex';
+    const next = upcoming[0];
+    el.textContent = next.diff === 0 ? `🎂 today: ${next.name}'s birthday` : next.diff === 1 ? `${next.name}'s birthday is tomorrow` : `${next.name} — birthday in ${next.diff} days`;
+    el.classList.remove('dim');
+    meta.textContent = upcoming.length > 1 ? `+${upcoming.length - 1} more in the next 14 days` : 'google contacts · birthdays';
+  } catch(e){ item.style.display = 'none'; }
+}
 
-    if(upcoming.length === 0){
-      // Hide the row entirely — nothing relevant in next 14 days
-      item.style.display = 'none';
-    } else {
-      item.style.display = 'flex';
-      const next = upcoming[0];
-      el.textContent = next.diff === 0
-        ? `🎂 today: ${next.name}'s birthday`
-        : next.diff === 1
-        ? `${next.name}'s birthday is tomorrow`
-        : `${next.name} — birthday in ${next.diff} days`;
-      el.classList.remove('dim');
-      meta.textContent = upcoming.length > 1
-        ? `+${upcoming.length - 1} more in the next 14 days`
-        : 'google contacts · birthdays';
+// ─── AVATAR — fetch, greyscale via canvas, display ─────────────────────────
+async function loadGoogleProfile(){
+  try{
+    const data = await googleFetch('https://www.googleapis.com/oauth2/v3/userinfo');
+
+    // Update name if not manually set
+    if(data.given_name || data.name){
+      const googleName = (data.given_name || data.name).toLowerCase();
+      // Only overwrite if name is still the default
+      if(userName === 'user'){
+        userName = googleName;
+        saveToStorage({ name: userName });
+        // Update greeting live
+        const period = getPeriod(new Date().getHours());
+        document.getElementById('greeting').innerHTML =
+          fmt(pick(GREETINGS[period]), userName) + '<span class="cursor"></span>';
+      }
     }
-  } catch(e){
-    item.style.display = 'none'; // hide on error too — don't clutter UI
-  }
+
+    // Avatar
+    if(data.picture){
+      const wrap = document.getElementById('avatar-wrap');
+      const img  = document.getElementById('avatar-img');
+
+      // Load image into a hidden Image element, draw to canvas, greyscale, output as PNG
+      const tempImg = new Image();
+      tempImg.crossOrigin = 'anonymous';
+      tempImg.onload = () => {
+        try{
+          const size = 52; // 26px display @ 2x
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = size;
+          const ctx = canvas.getContext('2d');
+
+          // Clip to circle
+          ctx.beginPath();
+          ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Draw
+          ctx.drawImage(tempImg, 0, 0, size, size);
+
+          // Greyscale: read pixels, desaturate, write back
+          const imgData = ctx.getImageData(0, 0, size, size);
+          const d = imgData.data;
+          for(let i = 0; i < d.length; i += 4){
+            const lum = Math.round(0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2]);
+            d[i] = d[i+1] = d[i+2] = lum;
+          }
+          ctx.putImageData(imgData, 0, 0);
+
+          img.src = canvas.toDataURL('image/png');
+          wrap.classList.add('visible');
+        } catch(e){
+          // Canvas tainted (CORS) — show nothing, fail silently
+        }
+      };
+      tempImg.onerror = () => {}; // fail silently
+      tempImg.src = data.picture;
+    }
+  } catch(e){}
 }
 
 async function loadAllGoogleData(){
   const ts  = document.getElementById('google-ts');
   const btn = document.getElementById('sync-refresh-btn');
   ts.textContent = 'syncing...';
-  if(btn){ btn.classList.add('spinning'); }
+  if(btn) btn.classList.add('spinning');
   await Promise.all([loadGoogleCalendar(), loadGmailUnread(), loadBirthdays()]);
   const now = new Date();
   ts.textContent = `synced ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  if(btn){ btn.classList.remove('spinning'); }
+  if(btn) btn.classList.remove('spinning');
 }
 
-async function fetchGoogleProfileName(token){
-  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-    headers: {
-      Authorization: `Bearer ${token}`
+function manualSync(){ if(googleToken) loadAllGoogleData(); }
+
+// ─── WEATHER (Open-Meteo, no API key) ─────────────────────────────────────
+const WMO_CODES = {
+  0:'clear sky',1:'mainly clear',2:'partly cloudy',3:'overcast',
+  45:'foggy',48:'icy fog',51:'light drizzle',53:'drizzle',55:'heavy drizzle',
+  61:'light rain',63:'rain',65:'heavy rain',71:'light snow',73:'snow',75:'heavy snow',
+  80:'rain showers',81:'showers',82:'heavy showers',
+  95:'thunderstorm',96:'thunderstorm w/ hail',99:'thunderstorm w/ heavy hail',
+};
+
+async function fetchWeather(lat, lon){
+  const el   = document.getElementById('f-weather');
+  const meta = document.getElementById('f-weather-meta');
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&wind_speed_unit=mph&temperature_unit=celsius&timezone=auto`;
+    const res  = await fetch(url);
+    if(!res.ok) throw new Error('weather fetch failed');
+    const data = await res.json();
+    const c    = data.current;
+    const desc = WMO_CODES[c.weather_code] ?? 'unknown conditions';
+    const temp = Math.round(c.temperature_2m);
+    const hum  = c.relative_humidity_2m;
+    const wind = Math.round(c.wind_speed_10m);
+    el.textContent = `${desc}, ${temp}°c · ${hum}% humidity`;
+    el.classList.remove('dim');
+    meta.textContent = `wind ${wind}mph · open-meteo · real-time`;
+  } catch(e){
+    el.textContent = 'weather unavailable';
+    meta.textContent = 'check connection';
+  }
+}
+
+// ─── POMODORO ──────────────────────────────────────────────────────────────
+const POMO_CONFIG = {
+  work:        25 * 60,
+  shortBreak:  5  * 60,
+  longBreak:   15 * 60,
+  sessionsBeforeLong: 4,
+};
+
+const pomoState = {
+  mode:       'work',     // 'work' | 'shortBreak' | 'longBreak'
+  running:    false,
+  remaining:  POMO_CONFIG.work,
+  session:    1,          // current work session (1-4)
+  completed:  0,          // completed work sessions this cycle
+  interval:   null,
+};
+
+function pomoDuration(mode){ return POMO_CONFIG[mode] ?? POMO_CONFIG.work; }
+
+function pomoPad(n){ return String(n).padStart(2,'0'); }
+
+function pomoRenderBar(){
+  const total  = pomoDuration(pomoState.mode);
+  const pct    = 1 - (pomoState.remaining / total);
+  const width  = 24;
+  const filled = Math.round(pct * width);
+  const empty  = width - filled;
+  document.getElementById('pomo-fill').textContent  = '█'.repeat(filled);
+  document.getElementById('pomo-empty').textContent = '░'.repeat(empty);
+  document.getElementById('pomo-pct').textContent   = Math.floor(pct * 100) + '%';
+}
+
+function pomoRenderDots(){
+  const wrap = document.getElementById('pomo-dots');
+  wrap.innerHTML = '';
+  for(let i = 0; i < POMO_CONFIG.sessionsBeforeLong; i++){
+    const d = document.createElement('div');
+    d.className = 'pomo-dot';
+    if(i < pomoState.completed) d.classList.add('done');
+    else if(i === pomoState.session - 1 && pomoState.mode === 'work') d.classList.add('active');
+    wrap.appendChild(d);
+  }
+}
+
+function pomoRender(){
+  const m = Math.floor(pomoState.remaining / 60);
+  const s = pomoState.remaining % 60;
+  document.getElementById('pomo-time').textContent = `${pomoPad(m)}:${pomoPad(s)}`;
+
+  const modeLabel = pomoState.mode === 'work'
+    ? `work session · ${pomoState.session} of ${POMO_CONFIG.sessionsBeforeLong}`
+    : pomoState.mode === 'shortBreak' ? 'short break' : 'long break — take a walk';
+  document.getElementById('pomo-label').textContent = modeLabel;
+
+  const statusLabel = document.getElementById('pomo-status-label');
+  statusLabel.textContent = pomoState.running
+    ? (pomoState.mode === 'work' ? 'running' : 'break')
+    : (pomoState.remaining === pomoDuration(pomoState.mode) ? 'idle' : 'paused');
+
+  // Colour the timer dimmer during breaks
+  const timeEl = document.getElementById('pomo-time');
+  timeEl.style.color = pomoState.mode === 'work' ? 'var(--accent)' : 'var(--fg2)';
+
+  document.getElementById('pomo-start').style.display = pomoState.running ? 'none' : '';
+  document.getElementById('pomo-pause').style.display = pomoState.running ? '' : 'none';
+
+  pomoRenderBar();
+  pomoRenderDots();
+
+  // Dynamic title update during active session
+  if(pomoState.running && pomoState.mode === 'work'){
+    document.title = `⏱ ${pomoPad(m)}:${pomoPad(s)} · InitLife`;
+  }
+}
+
+function pomoTick(){
+  if(pomoState.remaining <= 0){
+    pomoAdvance();
+    return;
+  }
+  pomoState.remaining--;
+  pomoRender();
+}
+
+function pomoAdvance(){
+  clearInterval(pomoState.interval);
+  pomoState.running = false;
+
+  if(pomoState.mode === 'work'){
+    pomoState.completed++;
+    if(pomoState.completed >= POMO_CONFIG.sessionsBeforeLong){
+      // Long break
+      pomoState.mode      = 'longBreak';
+      pomoState.remaining = POMO_CONFIG.longBreak;
+      pomoState.completed = 0;
+      pomoState.session   = 1;
+    } else {
+      // Short break
+      pomoState.mode      = 'shortBreak';
+      pomoState.remaining = POMO_CONFIG.shortBreak;
     }
-  });
+  } else {
+    // Break over → next work session
+    if(pomoState.mode === 'shortBreak') pomoState.session++;
+    pomoState.mode      = 'work';
+    pomoState.remaining = POMO_CONFIG.work;
+  }
 
-  if(!res.ok) throw new Error('failed to fetch user profile');
+  // Vibrate if supported
+  if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
-  const data = await res.json();
-  return data.given_name || data.name || 'user';
+  pomoRender();
+  // Auto-start next phase
+  pomoState.running  = true;
+  pomoState.interval = setInterval(pomoTick, 1000);
+  pomoRender();
 }
 
-function manualSync(){
-  if(!googleToken) return;
-  loadAllGoogleData();
+function pomoStart(){
+  if(pomoState.running) return;
+  pomoState.running  = true;
+  pomoState.interval = setInterval(pomoTick, 1000);
+  pomoRender();
+}
+
+function pomoPause(){
+  if(!pomoState.running) return;
+  clearInterval(pomoState.interval);
+  pomoState.running = false;
+  pomoRender();
+}
+
+function pomoReset(){
+  clearInterval(pomoState.interval);
+  pomoState.running   = false;
+  pomoState.mode      = 'work';
+  pomoState.remaining = POMO_CONFIG.work;
+  pomoState.session   = 1;
+  pomoState.completed = 0;
+  pomoRender();
+}
+
+function pomoSkip(){
+  clearInterval(pomoState.interval);
+  pomoState.running   = false;
+  pomoState.remaining = 0;
+  pomoAdvance();
 }
 
 // ─── QUOTES ────────────────────────────────────────────────────────────────
@@ -1097,38 +1119,31 @@ function showQuote(idx){
   document.getElementById('quote-num').textContent = `${(idx % QUOTES.length) + 1}/${QUOTES.length}`;
 }
 
-function cycleQuote(){
-  quoteIndex = (quoteIndex + 1) % QUOTES.length;
-  showQuote(quoteIndex);
-}
+function cycleQuote(){ quoteIndex = (quoteIndex + 1) % QUOTES.length; showQuote(quoteIndex); }
 
 // ─── BOOT ──────────────────────────────────────────────────────────────────
 function bootMain(){
   document.getElementById('onboard').classList.add('hidden');
   document.getElementById('main-view').style.display = 'block';
 
-  // Google state
   if(googleToken){
     document.getElementById('google-banner').classList.add('visible');
     document.getElementById('google-section').classList.add('visible');
     document.getElementById('connect-prompt').style.display = 'none';
     loadAllGoogleData();
+    loadGoogleProfile();
   } else {
     document.getElementById('google-banner').classList.remove('visible');
     document.getElementById('google-section').classList.remove('visible');
     document.getElementById('connect-prompt').style.display = 'block';
   }
 
-  // Greeting
   const now = new Date();
   const period = getPeriod(now.getHours());
-  document.getElementById('greeting').innerHTML =
-    fmt(pick(GREETINGS[period]), userName) + '<span class="cursor"></span>';
+  document.getElementById('greeting').innerHTML = fmt(pick(GREETINGS[period]), userName) + '<span class="cursor"></span>';
 
-  // Intel feed
   document.getElementById('f-focus').textContent = pick(FOCUS[period]);
-  document.getElementById('f-focus-meta').textContent =
-    'cognitive window: ' + period.replace('earlyMorning','early morning');
+  document.getElementById('f-focus-meta').textContent = 'cognitive window: ' + period.replace('earlyMorning','early morning');
   document.getElementById('f-period').textContent = PERIOD_INFO[period][0];
   document.getElementById('f-period-meta').textContent = PERIOD_INFO[period][1];
 
@@ -1141,21 +1156,17 @@ function bootMain(){
   const sf = pick(sysFacts);
   document.getElementById('f-sys').textContent = sf[0];
   document.getElementById('f-sys-meta').textContent = sf[1];
+  document.getElementById('intel-ts').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-  document.getElementById('intel-ts').textContent =
-    `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-  // Quote
   quoteIndex = Math.floor(Math.random() * QUOTES.length);
   showQuote(quoteIndex);
-
-  // Location
-  updateFooter();
   detectLocation();
-
-  // Tick
+  pomoRender(); // initialise pomodoro display
   tick();
   setInterval(tick, 1000);
+
+  // FIX: if beforeinstallprompt already fired before DOM was ready, show now
+  if(_deferredInstallPrompt) showInstallBanner('android');
 }
 
 // ─── TICK ──────────────────────────────────────────────────────────────────
@@ -1168,143 +1179,113 @@ function tick(){
 
   const DAYS   = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
   const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  document.getElementById('c-date').textContent = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 
-  document.getElementById('c-date').textContent =
-    `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
-
-  const doy = getDOY(now);
-  const wk  = getWk(now);
+  const doy = getDOY(now), wk = getWk(now);
   document.getElementById('c-doy').textContent = `day ${String(doy).padStart(3,'0')}`;
   document.getElementById('c-wk').textContent  = `wk ${pad(wk)}`;
 
-  // Day progress
   const elapsed = h * 3600 + m * 60 + s;
   const dayPct  = elapsed / 86400 * 100;
   document.getElementById('pf-day').style.width = dayPct + '%';
-  document.getElementById('prog-day-info').textContent =
-    `${Math.floor(dayPct)}% · ${23-h}h ${59-m}m left`;
+  document.getElementById('prog-day-info').textContent = `${Math.floor(dayPct)}% · ${23-h}h ${59-m}m left`;
 
-  // Week progress
   const weekPct = (now.getDay() / 7 * 100) + (elapsed / 86400 / 7 * 100);
   document.getElementById('pf-week').style.width = Math.min(weekPct, 100) + '%';
-  document.getElementById('prog-week-info').textContent =
-    `${Math.floor(weekPct)}% · ${6 - now.getDay()}d left`;
+  document.getElementById('prog-week-info').textContent = `${Math.floor(weekPct)}% · ${6 - now.getDay()}d left`;
 
-  // Year progress
-  const diy     = getDIY(now.getFullYear());
-  const yearPct = doy / diy * 100;
+  const diy = getDIY(now.getFullYear()), yearPct = doy / diy * 100;
   document.getElementById('pf-year').style.width = yearPct + '%';
-  document.getElementById('prog-year-info').textContent =
-    `${Math.floor(yearPct)}% · ${diy - doy}d left`;
+  document.getElementById('prog-year-info').textContent = `${Math.floor(yearPct)}% · ${diy - doy}d left`;
 
-  // Session uptime
   const el = Date.now() - sessionStart;
-  const ss = Math.floor(el / 1000) % 60;
-  const mm = Math.floor(el / 60000) % 60;
-  const hh = Math.floor(el / 3600000);
-  document.getElementById('session-up').textContent = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+  document.getElementById('session-up').textContent = `${pad(Math.floor(el/3600000))}:${pad(Math.floor(el/60000)%60)}:${pad(Math.floor(el/1000)%60)}`;
 
-  // Dynamic page title — updates every minute
   if(s === 0 || document._titleInit === undefined){
     document._titleInit = true;
-    const doy2 = getDOY(now);
-    const diy2 = getDIY(now.getFullYear());
-    const yPct = Math.floor(doy2 / diy2 * 100);
-    const dPct = Math.floor((h * 3600 + m * 60) / 86400 * 100);
-    document.title = `${pad(h)}:${pad(m)} · ${dPct}% day · InitLife`;
+    if(!pomoState.running || pomoState.mode !== 'work'){
+      document.title = `${pad(h)}:${pad(m)} · ${Math.floor(dayPct)}% day · InitLife`;
+    }
   }
 }
 
-// ─── INIT ──────────────────────────────────────────────────────────────────
-document.getElementById('ob-name')
-  .addEventListener('keydown', e => { if(e.key === 'Enter') saveProfile(); });
-
-// ── Apple Touch Icon (iOS requires PNG, not SVG) ──────────────────────────
-(function generateAppleTouchIcon(){
-  try {
+// ─── APPLE TOUCH ICON ──────────────────────────────────────────────────────
+(function(){
+  try{
     const c = document.createElement('canvas');
     c.width = c.height = 180;
     const ctx = c.getContext('2d');
-    // Background
     ctx.fillStyle = '#0a0a0a';
     ctx.beginPath();
     ctx.roundRect(0, 0, 180, 180, 32);
     ctx.fill();
-    // Cursor underscore character
+    // Draw the logo mark in white
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 110px monospace';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-    ctx.fillText('_', 26, 128);
+    ctx.save();
+    ctx.translate(90, 90);
+    // Outer frame ring (evenodd)
+    const outer = new Path2D('M -55,68 L 55,68 L 68,55 L 68,-55 L 55,-68 L -55,-68 L -68,-55 L -68,55 Z');
+    const inner = new Path2D('M -42,52 L 42,52 L 52,42 L 52,-42 L 42,-52 L -42,-52 L -52,-42 L -52,42 Z');
+    const ring = new Path2D();
+    ring.addPath(outer); ring.addPath(inner);
+    ctx.fill(ring, 'evenodd');
+    // Bracket arms
+    ctx.fillRect(-82, -14, 14, 28);
+    ctx.fillRect(68,  -14, 14, 28);
+    // Serif I
+    ctx.fillRect(-21, -46, 42, 10);
+    ctx.fillRect(-7,  -36, 14, 72);
+    ctx.fillRect(-21,  36, 42, 10);
+    ctx.restore();
     const link = document.getElementById('apple-touch-icon-link');
     if(link) link.href = c.toDataURL('image/png');
   } catch(e){}
 })();
 
-// ── Service Worker (required for Chrome install prompt) ───────────────────
+// ─── SERVICE WORKER ────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  // Inline service worker as a blob URL — no separate sw.js file needed
-  const swCode = `
-    const CACHE = 'initlife-v1';
-    self.addEventListener('install', e => {
-      self.skipWaiting();
-    });
-    self.addEventListener('activate', e => {
-      e.waitUntil(clients.claim());
-    });
-    self.addEventListener('fetch', e => {
-      // Network-first: always try live, fall back to cache
-      e.respondWith(
-        fetch(e.request).catch(() => caches.match(e.request))
-      );
-    });
-  `;
-  const blob = new Blob([swCode], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl, { scope: './' })
-    .catch(() => {}); // Fail silently — doesn't break the app
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
-// ── PWA Install ────────────────────────────────────────────────────────────
+// ─── PWA INSTALL ───────────────────────────────────────────────────────────
 let _deferredInstallPrompt = null;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-// Android/Chrome: capture the native install prompt
+// Capture the prompt — but don't try to show the banner yet, DOM may not be ready
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredInstallPrompt = e;
-  showInstallBanner('android');
+  // Only call showInstallBanner if main-view is already visible
+  // Otherwise bootMain() will call it after rendering
+  if(document.getElementById('main-view').style.display !== 'none'){
+    showInstallBanner('android');
+  }
 });
 
-// Detect if already installed as standalone
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-  || window.navigator.standalone === true;
-
 function showInstallBanner(platform){
-  const dismissed = localStorage.getItem('initlife_install_dismissed');
-  if(dismissed || isStandalone) return;
-
+  if(isStandalone) return;
+  if(localStorage.getItem('initlife_install_dismissed')) return;
   const banner = document.getElementById('install-banner');
   const sub    = document.getElementById('install-sub');
   const btn    = document.getElementById('install-btn');
-
+  if(!banner) return;
   if(platform === 'ios'){
     sub.innerHTML = 'tap <strong style="color:var(--fg2)">Share ↑</strong> then <strong style="color:var(--fg2)">Add to Home Screen</strong>';
-    btn.style.display = 'none'; // iOS can't use the prompt API
+    btn.style.display = 'none';
   } else {
     sub.textContent = 'install as a webapp for instant access — no app store needed';
+    btn.style.display = '';
   }
-
   banner.classList.add('visible');
 }
 
 function triggerInstall(){
-  if(_deferredInstallPrompt){
-    _deferredInstallPrompt.prompt();
-    _deferredInstallPrompt.userChoice.then(choice => {
-      if(choice.outcome === 'accepted') dismissInstall();
-      _deferredInstallPrompt = null;
-    });
-  }
+  if(!_deferredInstallPrompt) return;
+  _deferredInstallPrompt.prompt();
+  _deferredInstallPrompt.userChoice.then(choice => {
+    if(choice.outcome === 'accepted') dismissInstall();
+    _deferredInstallPrompt = null;
+  });
 }
 
 function dismissInstall(){
@@ -1312,32 +1293,22 @@ function dismissInstall(){
   try{ localStorage.setItem('initlife_install_dismissed', '1'); } catch(e){}
 }
 
-// Detect iOS Safari (no beforeinstallprompt, needs manual instructions)
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+// iOS Safari detection
+const isIOS    = /iphone|ipad|ipod/i.test(navigator.userAgent);
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 if(isIOS && isSafari && !isStandalone){
-  // Show after a short delay so page feels loaded first
-  setTimeout(() => showInstallBanner('ios'), 2000);
+  setTimeout(() => showInstallBanner('ios'), 2500);
 }
 
-// Handle Google OAuth redirect
+// ─── INIT ──────────────────────────────────────────────────────────────────
+document.getElementById('ob-name').addEventListener('keydown', e => { if(e.key === 'Enter') saveProfile(); });
+
 (async () => {
   const cameFromGoogle = handleGoogleCallback();
   loadProfile();
-
   if(cameFromGoogle && googleToken){
-    try{
-      const googleName = await fetchGoogleProfileName(googleToken);
-
-      if(googleName){
-        userName = googleName;
-        saveToStorage({ name: userName });
-      }
-    } catch(e){
-      console.warn('Google profile fetch failed:', e);
-    }
+    // Name will be pulled from profile API inside bootMain → loadGoogleProfile
   }
-
   bootMain();
 })();
 </script>
