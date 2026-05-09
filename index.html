@@ -12,7 +12,7 @@
   "name": "InitLife",
   "applicationCategory": "ProductivityApplication",
   "operatingSystem": "Web",
-  "description": "A minimalist terminal-style productivity dashboard with Pomodoro timers, Google Calendar sync, Gmail integration, weather, and PWA support.",
+  "description": "A minimalist terminal-style productivity dashboard with Pomodoro timers, Google Calendar & Gmail sync, weather, and PWA support.",
   "url": "https://initlife.app",
   "image": "https://initlife.app/images/InitLife_OG-Image.png",
   "author": {
@@ -27,7 +27,7 @@
 
 <!-- PWA -->
 <meta name="application-name" content="InitLife">
-<meta name="description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta name="description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, Google Calendar & Gmail sync, weather, live widgets, and installable PWA support.">
 <meta name="keywords" content="productivity dashboard, pomodoro timer, minimalist dashboard, terminal ui, life os, web app, pwa, gmail dashboard, calendar dashboard, focus timer">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="mobile-web-app-capable" content="yes">
@@ -38,7 +38,7 @@
 <!-- Open Graph -->
 <meta property="og:site_name" content="InitLife">
 <meta property="og:title" content="InitLife - Minimal Productivity Dashboard & Terminal-Style Life OS">
-<meta property="og:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta property="og:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, Google Calendar & Gmail sync, weather, live widgets, and installable PWA support.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://initlife.app">
 <meta property="og:image" content="https://initlife.app/images/InitLife_OG-Image.png">
@@ -46,7 +46,7 @@
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="InitLife - Minimal Productivity Dashboard & Terminal-Style Life OS">
-<meta name="twitter:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta name="twitter:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, Google Calendar & Gmail sync, weather, live widgets, and installable PWA support.">
 <meta name="twitter:image" content="https://initlife.app/images/InitLife_OG-Image.png">
 
 <!-- Favicon: logo SVG inline -->
@@ -88,6 +88,12 @@ html,body{
 
 a{color:var(--fg3);text-decoration:none;transition:color 0.2s ease}
 a:hover{color:var(--fg)}
+
+h1,h2,h3,h4,h5,h6{
+  margin:0;
+  font-size:inherit;
+  font-weight:inherit;
+}
 
 #hub{
   background:var(--bg);
@@ -433,12 +439,12 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
 
 <!-- ── ONBOARDING ─────────────────────────────── -->
 <div id="onboard">
-  <div class="ob-label">// first boot</div>
-  <div class="ob-title">initlife.app</div>
-  <div class="ob-domain">your life. one terminal.</div>
+  <h3 class="ob-label">// first boot</h3>
+  <h1 class="ob-title">initlife.app</h1>
+  <h2 class="ob-domain">your life. one terminal.</h2>
 
   <div class="ob-field">
-    <div class="ob-label">your name</div>
+    <h2 class="ob-label">your name</h2>
     <input class="ob-input" id="ob-name" type="text" placeholder="e.g. alex" autocomplete="off" spellcheck="false"/>
   </div>
 
@@ -480,8 +486,8 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
   <div class="header">
     <div class="header-left">
       <div class="status-dot"></div>
-      <span class="app-name">initlife.app</span>
-      <span class="app-ver">v2.2</span>
+      <h3 class="app-name">initlife.app</h3>
+      <h3 class="app-ver">v2.2</h3>
     </div>
     <div class="header-right">
       <div class="session" id="session-up">00:00:00</div>
@@ -496,8 +502,8 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
   <div id="install-banner">
     <div class="install-icon">⬇</div>
     <div class="install-body">
-      <div class="install-title">add initlife to your home screen</div>
-      <div class="install-sub" id="install-sub">install as a webapp for instant access</div>
+      <h2 class="install-title">add initlife to your home screen</h2>
+      <h3 class="install-sub" id="install-sub">install as a webapp for instant access</h3>
       <div class="install-actions">
         <button class="install-btn" id="install-btn" onclick="triggerInstall()">install app</button>
         <span class="install-dismiss" onclick="dismissInstall()">not now</span>
@@ -509,7 +515,7 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
   <div id="google-banner">
     <div class="g-badge">
       <div class="g-dot"></div>
-      <span>google connected</span>
+      <h3>google connected</h3>
     </div>
     <div class="g-disconnect" onclick="disconnectGoogle()">disconnect</div>
   </div>
