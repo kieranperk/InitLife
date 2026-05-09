@@ -3,18 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>InitLife</title>
+<title>InitLife - Minimal Productivity Dashboard & Terminal-Style Life OS</title>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InitLife",
+  "applicationCategory": "ProductivityApplication",
+  "operatingSystem": "Web",
+  "description": "A minimalist terminal-style productivity dashboard with Pomodoro timers, Google Calendar sync, Gmail integration, weather, and PWA support.",
+  "url": "https://initlife.app",
+  "image": "https://initlife.app/images/InitLife_OG-Image.png",
+  "author": {
+    "@type": "Person",
+    "name": "Kieran Perkinton"
+  }
+}
+</script>
 
 <link rel="privacy-policy" href="privacy.html">
+<link rel="canonical" href="https://initlife.app/">
 
 <!-- PWA -->
 <meta name="application-name" content="InitLife">
-<meta name="description" content="Your life. One terminal.">
+<meta name="description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta name="keywords" content="productivity dashboard, pomodoro timer, minimalist dashboard, terminal ui, life os, web app, pwa, gmail dashboard, calendar dashboard, focus timer">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="InitLife">
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="InitLife">
+<meta property="og:title" content="InitLife - Minimal Productivity Dashboard & Terminal-Style Life OS">
+<meta property="og:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://initlife.app">
+<meta property="og:image" content="https://initlife.app/images/InitLife_OG-Image.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="InitLife - Minimal Productivity Dashboard & Terminal-Style Life OS">
+<meta name="twitter:description" content="InitLife is a minimalist terminal-style productivity dashboard with Pomodoro focus timers, calendar sync, Gmail integration, weather, live widgets, and installable PWA support.">
+<meta name="twitter:image" content="https://initlife.app/images/InitLife_OG-Image.png">
 
 <!-- Favicon: logo SVG inline -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230a0a0a'/%3E%3Cg transform='translate(256,256)' fill='white'%3E%3Cpath fill-rule='evenodd' d='M -154,188 L 154,188 L 188,154 L 188,-154 L 154,-188 L -154,-188 L -188,-154 L -188,154 Z M -118,142 L 118,142 L 142,118 L 142,-118 L 118,-142 L -118,-142 L -142,-118 L -142,118 Z'/%3E%3Crect x='-228' y='-30' width='40' height='60'/%3E%3Crect x='188' y='-30' width='40' height='60'/%3E%3Crect x='-44' y='-96' width='88' height='22'/%3E%3Crect x='-14' y='-74' width='28' height='148'/%3E%3Crect x='-44' y='74' width='88' height='22'/%3E%3C/g%3E%3C/svg%3E">
@@ -66,6 +99,11 @@ a:hover{color:var(--fg)}
   position:relative;
   overflow-x:hidden;
   padding-bottom:env(safe-area-inset-bottom);
+
+  max-width: 720px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 
 .scanlines{
@@ -89,6 +127,31 @@ a:hover{color:var(--fg)}
 .ob-title{font-size:26px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-bottom:4px}
 .ob-domain{font-size:10px;color:var(--fg3);margin-bottom:28px;letter-spacing:0.05em}
 .ob-field{margin-bottom:20px}
+
+.ob-links{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:14px;
+}
+
+.ob-link{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  color:var(--fg3);
+  transition:color .2s ease;
+}
+
+.ob-link:hover{
+  color:var(--fg);
+}
+
+.ob-link svg{
+  width:12px;
+  height:12px;
+}
 
 .ob-input{
   width:100%;background:transparent;border:none;
@@ -213,6 +276,42 @@ a:hover{color:var(--fg)}
 #google-section{display:none}
 #google-section.visible{display:block}
 
+/* ── EXPANDABLE ROWS ─────────────────────────── */
+
+.expandable{cursor:pointer;user-select:none;-webkit-user-select:none}
+.expandable:hover .feed-title{color:var(--fg2)}
+
+.expand-chevron{
+  font-size:14px;color:var(--fg3);flex-shrink:0;
+  margin-top:1px;margin-left:4px;
+  transition:transform 0.2s ease;
+  line-height:1.4;
+}
+.expand-chevron.open{transform:rotate(90deg)}
+
+.expand-panel{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height 0.3s ease;
+  background:var(--bg3);
+  border-bottom:none;
+}
+.expand-panel.open{
+  max-height:400px;
+  border-bottom:1px solid #0f0f0f;
+}
+
+.expand-row{
+  padding:7px 20px 7px 20px;
+  display:flex;align-items:baseline;gap:10px;
+  border-bottom:1px solid #141414;
+  font-size:11px;
+}
+.expand-row:last-child{border-bottom:none}
+.expand-row-time{color:var(--fg3);font-size:10px;flex-shrink:0;min-width:42px}
+.expand-row-label{color:var(--fg2);flex:1}
+.expand-row-meta{color:var(--fg3);font-size:10px;flex-shrink:0}
+
 /* ── POMODORO ─────────────────────────────────── */
 
 .pomo-btn{
@@ -307,6 +406,25 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
   .ob-input{font-size:16px}
   #onboard{padding:32px 20px}
 }
+
+@media(min-width: 1200px){
+  #hub{
+    max-width: 860px;
+  }
+}
+
+@media(min-width: 900px){
+  #onboard{
+    align-items:center;
+    justify-content:center;
+  }
+
+  #onboard > *{
+    width:100%;
+    max-width:520px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -343,7 +461,17 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
   </div>
 
   <span class="ob-skip" onclick="skipSetup()">skip for now</span>
-  <a class="ob-skip" href="privacy.html">privacy policy</a>
+  
+  <div class="ob-links">
+    <a class="ob-link" href="privacy.html">
+        <svg viewBox="0 0 24 24"><path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        privacy
+      </a>
+      <a class="ob-link" href="https://github.com/kieranperk/InitLife" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.77.6-3.36-1.19-3.36-1.19-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.21-.25-4.54-1.11-4.54-4.92 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0112 6.8c.85 0 1.71.11 2.5.33 1.9-1.29 2.74-1.02 2.74-1.02.55 1.41.2 2.46.1 2.72.64.7 1.03 1.59 1.03 2.68 0 3.82-2.34 4.66-4.57 4.91.36.31.68.92.68 1.86v2.75c0 .26.18.58.69.48A10 10 0 0012 2z" fill="currentColor"/></svg>
+        github
+      </a>
+  </div>
 </div>
 
 <!-- ── MAIN ──────────────────────────────────── -->
@@ -433,20 +561,24 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
       </div>
     </div>
     <div class="section-body">
-      <div class="feed-item">
+      <div class="feed-item expandable" id="cal-row" onclick="toggleExpand('cal-expand')">
         <div class="feed-tag google">cal</div>
         <div class="feed-content">
           <div class="feed-title dim" id="g-cal">loading calendar...</div>
           <div class="feed-meta" id="g-cal-meta">upcoming events</div>
         </div>
+        <div class="expand-chevron" id="cal-chevron">›</div>
       </div>
-      <div class="feed-item">
+      <div class="expand-panel" id="cal-expand"></div>
+      <div class="feed-item expandable" id="mail-row" onclick="toggleExpand('mail-expand')">
         <div class="feed-tag google">mail</div>
         <div class="feed-content">
           <div class="feed-title dim" id="g-mail">loading inbox...</div>
           <div class="feed-meta" id="g-mail-meta">gmail unread</div>
         </div>
+        <div class="expand-chevron" id="mail-chevron">›</div>
       </div>
+      <div class="expand-panel" id="mail-expand"></div>
       <div class="feed-item" id="bday-item" style="display:none">
         <div class="feed-tag google">bday</div>
         <div class="feed-content">
@@ -497,32 +629,20 @@ button,.ob-skip,.g-disconnect,.connect-btn,.install-btn,.install-dismiss{touch-a
           <div class="feed-meta" id="f-period-meta">time of day analysis</div>
         </div>
       </div>
-      <div class="feed-item">
-        <div class="feed-tag">focus</div>
-        <div class="feed-content">
-          <div class="feed-title" id="f-focus">loading...</div>
-          <div class="feed-meta" id="f-focus-meta">cognitive window</div>
-        </div>
-      </div>
-      <div class="feed-item" id="weather-item">
+      <div class="feed-item expandable" onclick="toggleExpand('weather-expand')">
         <div class="feed-tag">wthr</div>
         <div class="feed-content">
           <div class="feed-title dim" id="f-weather">fetching conditions...</div>
           <div class="feed-meta" id="f-weather-meta">open-meteo · local</div>
         </div>
+        <div class="expand-chevron" id="weather-chevron">›</div>
       </div>
+      <div class="expand-panel" id="weather-expand"></div>
       <div class="feed-item">
         <div class="feed-tag">loc</div>
         <div class="feed-content">
           <div class="feed-title" id="f-loc">locating...</div>
           <div class="feed-meta" id="f-loc-meta">geolocation</div>
-        </div>
-      </div>
-      <div class="feed-item">
-        <div class="feed-tag">sys</div>
-        <div class="feed-content">
-          <div class="feed-title" id="f-sys">all systems nominal</div>
-          <div class="feed-meta" id="f-sys-meta">local diagnostics</div>
         </div>
       </div>
     </div>
@@ -797,33 +917,90 @@ async function googleFetch(url){
 
 async function loadGoogleCalendar(){
   const el = document.getElementById('g-cal'), meta = document.getElementById('g-cal-meta');
+  const panel = document.getElementById('cal-expand');
   try{
     const now = new Date().toISOString();
-    const end = new Date(Date.now() + 7 * 86400000).toISOString();
-    const data = await googleFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&timeMax=${end}&maxResults=3&orderBy=startTime&singleEvents=true`);
+    const end = new Date(Date.now() + 14 * 86400000).toISOString();
+    const data = await googleFetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&timeMax=${end}&maxResults=7&orderBy=startTime&singleEvents=true`);
     const events = data.items || [];
-    if(!events.length){ el.textContent = 'no upcoming events'; meta.textContent = 'next 7 days clear'; return; }
-    const next = events[0];
-    const start = next.start.dateTime
-      ? new Date(next.start.dateTime).toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})
-      : new Date(next.start.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-    el.textContent = next.summary || 'untitled event';
+    if(!events.length){
+      el.textContent = 'no upcoming events';
+      el.classList.remove('dim');
+      meta.textContent = 'next 14 days clear';
+      document.getElementById('cal-chevron').style.display = 'none';
+      return;
+    }
+
+    const fmtEvt = e => {
+      if(e.start.dateTime){
+        const d = new Date(e.start.dateTime);
+        return {
+          time: d.toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'}),
+          label: e.summary || 'untitled',
+          meta: e.location ? e.location.split(',')[0] : '',
+        };
+      }
+      const d = new Date(e.start.date + 'T00:00:00');
+      return {
+        time: d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}),
+        label: e.summary || 'untitled',
+        meta: 'all day',
+      };
+    };
+
+    const first = fmtEvt(events[0]);
+    el.textContent = first.label;
     el.classList.remove('dim');
-    meta.textContent = `${start} · ${events.length} event${events.length>1?'s':''} this week`;
+    meta.textContent = `${first.time}${events.length > 1 ? ` · +${events.length - 1} more` : ''}`;
+
+    // Build expand panel
+    panel.innerHTML = events.map(e => {
+      const f = fmtEvt(e);
+      return `<div class="expand-row">
+        <span class="expand-row-time">${f.time}</span>
+        <span class="expand-row-label">${f.label}</span>
+        ${f.meta ? `<span class="expand-row-meta">${f.meta}</span>` : ''}
+      </div>`;
+    }).join('');
+
   } catch(e){ el.textContent = 'calendar unavailable'; meta.textContent = e.message; }
 }
 
 async function loadGmailUnread(){
   const el = document.getElementById('g-mail'), meta = document.getElementById('g-mail-meta');
+  const panel = document.getElementById('mail-expand');
   try{
-    // FIX: labelIds must be passed as repeated params, not comma-separated
-    const data = await googleFetch(
-      'https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&labelIds=UNREAD&maxResults=1'
-    );
-    const count = data.resultSizeEstimate || 0;
+    // Use the labels endpoint — gives exact messagesUnread count, not a flaky estimate
+    const label = await googleFetch('https://www.googleapis.com/gmail/v1/users/me/labels/INBOX');
+    const count = label.messagesUnread ?? 0;
+    const threads = label.threadsUnread ?? 0;
+
     el.textContent = count === 0 ? 'inbox zero — nice' : `${count} unread message${count !== 1 ? 's' : ''}`;
     el.classList.remove('dim');
-    meta.textContent = 'gmail · primary inbox';
+    meta.textContent = count === 0 ? 'gmail · all clear' : `${threads} thread${threads !== 1 ? 's' : ''} · gmail inbox`;
+
+    // Expand panel: fetch up to 5 unread message subjects
+    if(count > 0){
+      try{
+        const msgs = await googleFetch('https://www.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&labelIds=UNREAD&maxResults=5');
+        const items = msgs.messages || [];
+        const details = await Promise.all(items.map(m =>
+          googleFetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject`)
+        ));
+        panel.innerHTML = details.map(d => {
+          const headers = d.payload?.headers || [];
+          const subject = headers.find(h => h.name === 'Subject')?.value || '(no subject)';
+          const from    = headers.find(h => h.name === 'From')?.value || '';
+          const sender  = from.replace(/<.*>/, '').replace(/"/g,'').trim() || from;
+          return `<div class="expand-row">
+            <span class="expand-row-label" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${subject}</span>
+            <span class="expand-row-meta" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px">${sender}</span>
+          </div>`;
+        }).join('');
+      } catch(e){ panel.innerHTML = ''; }
+    } else {
+      document.getElementById('mail-chevron').style.display = 'none';
+    }
   } catch(e){ el.textContent = 'gmail unavailable'; meta.textContent = e.message; }
 }
 
@@ -941,24 +1118,65 @@ const WMO_CODES = {
 };
 
 async function fetchWeather(lat, lon){
-  const el   = document.getElementById('f-weather');
-  const meta = document.getElementById('f-weather-meta');
+  const el    = document.getElementById('f-weather');
+  const meta  = document.getElementById('f-weather-meta');
+  const panel = document.getElementById('weather-expand');
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&wind_speed_unit=mph&temperature_unit=celsius&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&hourly=temperature_2m,weather_code,precipitation_probability&wind_speed_unit=mph&temperature_unit=celsius&timezone=auto&forecast_days=1`;
     const res  = await fetch(url);
     if(!res.ok) throw new Error('weather fetch failed');
     const data = await res.json();
     const c    = data.current;
-    const desc = WMO_CODES[c.weather_code] ?? 'unknown conditions';
+    const desc = WMO_CODES[c.weather_code] ?? 'unknown';
     const temp = Math.round(c.temperature_2m);
     const hum  = c.relative_humidity_2m;
     const wind = Math.round(c.wind_speed_10m);
+
     el.textContent = `${desc}, ${temp}°c · ${hum}% humidity`;
     el.classList.remove('dim');
-    meta.textContent = `wind ${wind}mph · open-meteo · real-time`;
+    meta.textContent = `wind ${wind}mph · open-meteo`;
+
+    // Build hourly expand — next 6 hours from now
+    const nowH   = new Date().getHours();
+    const hours  = data.hourly;
+    const rows   = [];
+    for(let i = 0; i < 24 && rows.length < 6; i++){
+      const h = parseInt(hours.time[i].split('T')[1]);
+      if(h < nowH) continue;
+      const t    = Math.round(hours.temperature_2m[i]);
+      const wc   = WMO_CODES[hours.weather_code[i]] ?? 'unknown';
+      const rain = hours.precipitation_probability[i];
+      const hStr = String(h).padStart(2,'0') + ':00';
+      rows.push(`<div class="expand-row">
+        <span class="expand-row-time">${hStr}</span>
+        <span class="expand-row-label">${wc}, ${t}°c</span>
+        <span class="expand-row-meta">${rain}% rain</span>
+      </div>`);
+    }
+    panel.innerHTML = rows.join('');
+
   } catch(e){
     el.textContent = 'weather unavailable';
     meta.textContent = 'check connection';
+    document.getElementById('weather-chevron').style.display = 'none';
+  }
+}
+
+// ─── EXPAND TOGGLE ─────────────────────────────────────────────────────────
+function toggleExpand(panelId){
+  const panel   = document.getElementById(panelId);
+  const chevron = panel.previousElementSibling?.querySelector('.expand-chevron');
+  const isOpen  = panel.classList.contains('open');
+  // Close all panels first
+  document.querySelectorAll('.expand-panel.open').forEach(p => {
+    p.classList.remove('open');
+    const ch = p.previousElementSibling?.querySelector('.expand-chevron');
+    if(ch) ch.classList.remove('open');
+  });
+  // Open this one if it was closed
+  if(!isOpen){
+    panel.classList.add('open');
+    if(chevron) chevron.classList.add('open');
   }
 }
 
@@ -971,12 +1189,13 @@ const POMO_CONFIG = {
 };
 
 const pomoState = {
-  mode:       'work',     // 'work' | 'shortBreak' | 'longBreak'
+  mode:       'work',
   running:    false,
   remaining:  POMO_CONFIG.work,
-  session:    1,          // current work session (1-4)
-  completed:  0,          // completed work sessions this cycle
+  session:    1,
+  completed:  0,
   interval:   null,
+  focusHint:  '',   // set from FOCUS[] on bootMain
 };
 
 function pomoDuration(mode){ return POMO_CONFIG[mode] ?? POMO_CONFIG.work; }
@@ -1012,8 +1231,8 @@ function pomoRender(){
   document.getElementById('pomo-time').textContent = `${pomoPad(m)}:${pomoPad(s)}`;
 
   const modeLabel = pomoState.mode === 'work'
-    ? `work session · ${pomoState.session} of ${POMO_CONFIG.sessionsBeforeLong}`
-    : pomoState.mode === 'shortBreak' ? 'short break' : 'long break — take a walk';
+    ? `work session · ${pomoState.session} of ${POMO_CONFIG.sessionsBeforeLong}${pomoState.focusHint ? ' · ' + pomoState.focusHint : ''}`
+    : pomoState.mode === 'shortBreak' ? 'short break — step away' : 'long break — take a walk';
   document.getElementById('pomo-label').textContent = modeLabel;
 
   const statusLabel = document.getElementById('pomo-status-label');
@@ -1142,21 +1361,14 @@ function bootMain(){
   const period = getPeriod(now.getHours());
   document.getElementById('greeting').innerHTML = fmt(pick(GREETINGS[period]), userName) + '<span class="cursor"></span>';
 
-  document.getElementById('f-focus').textContent = pick(FOCUS[period]);
-  document.getElementById('f-focus-meta').textContent = 'cognitive window: ' + period.replace('earlyMorning','early morning');
   document.getElementById('f-period').textContent = PERIOD_INFO[period][0];
   document.getElementById('f-period-meta').textContent = PERIOD_INFO[period][1];
-
-  const sysFacts = [
-    ['timezone: ' + Intl.DateTimeFormat().resolvedOptions().timeZone.toLowerCase(), 'detected from browser'],
-    ['locale: ' + navigator.language.toLowerCase(), 'browser locale'],
-    ['diagnostics: passed', '0 errors detected'],
-    ['connection: ' + (navigator.onLine ? 'online' : 'offline'), 'network status'],
-  ];
-  const sf = pick(sysFacts);
-  document.getElementById('f-sys').textContent = sf[0];
-  document.getElementById('f-sys-meta').textContent = sf[1];
   document.getElementById('intel-ts').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  // Integrate focus window hint into pomodoro sub-label
+  const focusHint = pick(FOCUS[period]);
+  pomoState.focusHint = focusHint;
+  document.getElementById('pomo-label').textContent = `work session · 1 of 4 · ${focusHint}`;
 
   quoteIndex = Math.floor(Math.random() * QUOTES.length);
   showQuote(quoteIndex);
