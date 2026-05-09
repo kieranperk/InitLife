@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>InitLife</title>
 
+<link rel="privacy-policy" href="privacy.html">
+
 <!-- PWA -->
 <meta name="application-name" content="InitLife">
 <meta name="description" content="Your life. One terminal.">
@@ -48,6 +50,16 @@ html,body{
   -webkit-text-size-adjust:100%;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
+}
+
+a {
+  color: var(--fg3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--fg);
 }
 
 #hub{
@@ -507,7 +519,7 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
   </div>
 
   <div class="ob-skip" onclick="skipSetup()">skip for now</div>
-  <div class="ob-skip" onclick="location.href='privacy.html'">privacy policy</div>
+  <a class="ob-skip" href="privacy.html">privacy policy</a>
 </div>
 
 <!-- ── MAIN ──────────────────────────────────── -->
@@ -701,7 +713,7 @@ button,.footer-btn,.ob-skip,.g-disconnect,.connect-btn{
   <div class="footer">
     <div class="footer-l" id="f-left">initlife.app · locating...</div>
     <div class="footer-r">
-      <span class="footer-btn" onclick="location.href='privacy.html'">privacy policy</span>
+      <a class="footer-btn" href="privacy.html">privacy policy</a>
       <span class="footer-btn" onclick="cycleQuote()">↻ quote</span>
       <span class="footer-btn" onclick="resetProfile()">⟳ reset</span>
     </div>
