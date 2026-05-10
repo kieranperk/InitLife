@@ -1116,8 +1116,7 @@
         .feed-item,
         .quote-block,
         .footer,
-        #connect-prompt,
-        #google-banner,
+        .google,
         .clock-block {
           padding-left: 16px;
           padding-right: 16px;
@@ -1261,6 +1260,10 @@
         <div class="settings-group">
           <div class="settings-title">display modules</div>
 
+          <button class="setting-toggle" data-toggle-section="greeting">
+            greeting.message
+          </button>
+          
           <button class="setting-toggle" data-toggle-section="progress">
             progress.track
           </button>
@@ -1305,7 +1308,7 @@
           <div class="header-left">
             <div class="status-dot"></div>
             <h3 class="app-name">initlife.app</h3>
-            <h3 class="app-ver">v2.2</h3>
+            <h3 class="app-ver">v1.0.0</h3>
           </div>
           <div class="header-right">
             <div class="session" id="session-up">00:00:00</div>
@@ -1713,6 +1716,7 @@
       // ─── SETTINGS MANAGEMENT ─────────────────────────────────────────────────
       const defaultSettings = {
         sections: {
+          greeting: true,
           progress: true,
           pomodoro: true,
           intel: true,
@@ -2010,9 +2014,12 @@
         try {
           localStorage.removeItem("initlife_profile");
         } catch (e) {}
+
         googleToken = null;
+
         document.getElementById("onboard").classList.remove("hidden");
         document.getElementById("main-view").style.display = "none";
+
         document.getElementById("ob-name").value = "";
       }
 
@@ -2931,6 +2938,22 @@
         }
         bootMain();
       })();
+
+      // ─── INITIAL BOOT ─────────────────────────────────────────────
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const hasProfile = loadProfile();
+        const hasGoogleCallback = handleGoogleCallback();
+
+        // If user already onboarded OR just authenticated with Google
+        if (hasProfile || hasGoogleCallback) {
+          bootMain();
+        } else {
+          // show onboarding
+          document.getElementById("onboard").classList.remove("hidden");
+          document.getElementById("main-view").style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>
