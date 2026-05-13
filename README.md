@@ -35,6 +35,8 @@ Built to live as a pinned tab on your PC and a home screen shortcut on your phon
 [✓] day · week · year progress bars with time remaining
 [✓] time-aware greeting with your name
 [✓] focus window suggestions based on time of day
+[✓] custom theme / accent colour picker
+[✓] configurable widgets (show/hide sections)
 [✓] auto geolocation via nominatim reverse geocoding
 [✓] weather api integration (real-time conditions)
 [✓] pomodoro / focus timer mode
@@ -140,8 +142,6 @@ initlife/
 
 ```
 [ ] google tasks integration
-[ ] custom theme / accent colour picker
-[ ] configurable widgets (show/hide sections)
 [ ] offline service worker / full pwa cache
 ```
 
